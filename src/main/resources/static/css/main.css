@@ -1,0 +1,800 @@
+body {
+    box-sizing: border-box;
+    background-color: #000;
+    color: #fff;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    overflow-x: hidden;
+}
+
+html {
+    height: 100%;
+}
+
+/* 让整个页面背景统一 */
+.page.visible,
+.right {
+    background-color: #000; /* 统一深色背景 */
+}
+
+/* 左边区域 */
+.left {
+    height: 100vh;
+    min-height: 100vh;
+    width: 15vw;
+    min-width: 200px;
+    background-color: #000;
+    position: sticky;
+    top: 0;
+    flex-shrink: 0;
+}
+
+/* 文字 */
+.left-text {
+    color: #fff;
+    font-size: 30px;
+    text-align: center;
+    margin-top: 20px;
+    letter-spacing: 2px;
+}
+
+/* 功能 */
+.navigation {
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+    align-items: center;
+}
+
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    text-align: center;
+}
+
+/* 高亮 */
+.nav-active {
+    background-color: #333;
+    padding: 10px 0;
+}
+
+.nav-list li {
+    width: 100%;
+    color: #fff;
+    font-size: 25px;
+    margin: 40px 0;
+    cursor: pointer;
+    letter-spacing: 2px;
+}
+
+.nav-list li:hover {
+    background-color: #333333;
+    padding: 10px 0;
+}
+
+.nav-list li.active {
+    background-color: #333;
+    padding: 10px 0;
+}
+
+.nav-item::after {
+    content: '\e621';
+    font-family: 'iconfont';
+    font-size: 20px;
+    color: #fff;
+    margin-left: 10px;
+}
+
+/* 右边区域 */
+.right {
+    height: auto;
+    min-height: 100vh;
+    background-color: #000;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+/* 头部区域 */
+.userMessageBox {
+    height: 60px;
+    display: flex;
+    justify-content: flex-end;
+    flex: 0 auto;
+    background-color: #000;
+}
+
+.userMessage {
+    color: #fff;
+    font-size: 20px;
+    margin: auto 20px;
+    letter-spacing: 2px;
+
+}
+
+.userMessage::after {
+    content: '\e8c6';
+    font-family: 'iconfont';
+    font-size: 30px;
+    color: #fff;
+    margin-left: 10px;
+}
+
+/* 修改密码按钮 */
+#editPasswordBtn {
+    margin: auto 5px;
+    padding: 5px 15px;
+    font-size: 16px;
+}
+
+/* 页面内容 */
+.page {
+    display: none;
+}
+
+/* 仪表盘导航 */
+.dash-navigation {
+    font-size: 20px;
+    color: #ffffff;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 仪表盘列表 */
+.dash-item {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.dash-item li {
+    font-size: 20px;
+    color: #ffffff;
+    margin-right: 10px;
+    letter-spacing: 2px;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+}
+
+.dash-item li:hover {
+    background-color: #333333;
+}
+
+.dash-item-active {
+    background-color: #333;
+}
+
+.dash-item-page {
+    display: flex;
+}
+
+/* 学生总数卡片 */
+.student-total {
+    margin-top: 40px;
+    font-size: 20px;
+    width: 350px;
+    height: 100px;
+    color: #ffffff;
+    background-color: #ffaa00;
+    display: flex;
+    justify-content: center;
+    border-radius: 15px;
+}
+
+.student-total-text {
+    margin: auto;
+    letter-spacing: 2px;
+    font-size: 40px;
+}
+
+.boyAndGirlPie {
+    margin-top: 100px;
+    width: 350px;
+    height: 350px;
+    background-color: #333333;
+    border-radius: 15px;
+}
+
+.student-total-page-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.student-total-page-right {
+    margin-left: 50px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+#collageLineChart {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 400px;
+}
+
+
+.page.visible {
+    padding: 20px;
+    font-size: 20px;
+    flex: 1;
+    background-color: #000;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.dash-sub-page {
+    display: none;
+}
+
+.dash-visible {
+    display: block;
+}
+
+/* 学生管理 */
+.student-edit-box {
+    display: flex;
+    justify-content: flex-end;  /* 靠右对齐 */
+    padding-bottom: 20px;
+    padding-left: 20px;
+}
+
+.student-import-btn {
+    margin-right: auto;  /* 导入按钮靠左 */
+}
+
+.student-add-btn {
+    margin-left: auto;
+}
+
+.student-edit-btn {
+    font-size: 20px;
+    letter-spacing: 2px;
+    font-weight: 800;
+}
+
+/* 教师管理 */
+.teacher-edit-box {
+    display: flex;
+    justify-content: flex-end;  /* 靠右对齐 */
+    padding-bottom: 20px;
+    padding-left: 20px;
+}
+
+.teacher-import-btn {
+    margin-right: auto;  /* 导入按钮靠左 */
+}
+
+.teacher-add-btn {
+    margin-left: auto;
+}
+
+/*教师列表*/
+.teacher-form {
+    margin-top: 20px;
+    width: 100%;
+    height: 100%;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.teacher-form-title td {
+    background-color: gray;
+    height: 50px;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+}
+
+.teacher-form-item td {
+    height: 50px;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+    border-bottom: 1px solid gray;
+}
+
+/*学生渲染列表*/
+.student-form {
+    margin-top: 20px;
+    width: 100%;
+    height: 100%;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.student-form-title td {
+    background-color: gray;
+    height: 50px;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+    border-bottom: 1px solid gray;
+}
+
+.student-form-item td {
+    height: 50px;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+    border-bottom: 1px solid gray;
+}
+
+/* 课程页 */
+/* 添加课程按钮 */
+.class-add-btn-box {
+    display: flex;
+    justify-content: flex-end;
+    padding-bottom: 20px;
+    padding-left: 20px;
+}
+
+/* 课程表单 */
+.class-form {
+    margin-top: 20px;
+    width: 100%;
+    height: 100%;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.class-form-title td {
+    background-color: gray;
+    height: 50px;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+    border-bottom: 1px solid gray;
+}
+
+.class-form-item td {
+    height: 50px;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+    border-bottom: 1px solid gray;
+}
+
+/* 条件搜索 */
+.class-search-box {
+    display: flex;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    align-items: center;
+    gap: 10px;
+}
+
+.class-search-select {
+    flex-shrink: 0;
+    width: auto !important;         /* 让下拉框根据文字长度自适应，不要太长 */
+}
+
+.class-search-input {
+    flex: 1;        /* 让输入框占据剩余空间 */
+}
+
+.class-search-btn {
+    flex-shrink: 0;
+}
+
+.class-reset-btn {
+    flex-shrink: 0;
+    background-color: #6c757d !important;  /* 灰色背景 */
+    border-color: #6c757d !important;
+}
+
+
+/* =========================================
+   响应式设计 - 自适应页面
+   ========================================= *//* 大屏幕 (大于1200px) */
+@media screen and (max-width: 1400px) {
+    .left {
+        width: 200px;
+    }
+    
+    .left-text {
+        font-size: 24px;
+    }
+    
+    .nav-list li {
+        font-size: 20px;
+    }
+    
+    .student-total {
+        width: 280px;
+        height: 80px;
+    }
+    
+    .student-total-text {
+        font-size: 32px;
+    }
+    
+    .boyAndGirlPie {
+        width: 280px;
+        height: 280px;
+    }
+    
+    .student-total-page-right {
+        min-height: 350px;
+    }
+}
+
+/* 中等屏幕 (992px - 1200px) */
+@media screen and (max-width: 1200px) {
+    .left {
+        width: 180px;
+    }
+    
+    .left-text {
+        font-size: 20px;
+    }
+    
+    .nav-list li {
+        font-size: 18px;
+        margin: 30px 0;
+    }
+    
+    .student-total {
+        width: 240px;
+        height: 70px;
+    }
+    
+    .student-total-text {
+        font-size: 28px;
+    }
+    
+    .boyAndGirlPie {
+        width: 240px;
+        height: 240px;
+    }
+    
+    .dash-item li {
+        font-size: 16px;
+        padding: 15px;
+    }
+    
+    .student-total-page-right {
+        min-height: 300px;
+    }
+}
+
+/* 平板 (768px - 992px) */
+@media screen and (max-width: 992px) {
+    body {
+        flex-direction: column;
+    }
+    
+    .left {
+        width: 100%;
+        height: auto;
+        min-height: auto;
+        padding: 10px 0;
+        position: relative;
+    }
+    
+    .left-text {
+        font-size: 22px;
+        margin-top: 10px;
+    }
+    
+    .navigation {
+        margin-top: 20px;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .nav-list {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .nav-list li {
+        font-size: 16px;
+        margin: 5px 10px;
+        padding: 8px 15px !important;
+    }
+    
+    .right {
+        min-height: calc(100vh - 120px);
+    }
+    
+    .userMessageBox {
+        height: 50px;
+    }
+    
+    .userMessage {
+        font-size: 16px;
+    }
+    
+    .dash-item-page {
+        flex-direction: column;
+    }
+    
+    .student-total-page-right {
+        margin-left: 0;
+        margin-top: 30px;
+    }
+    
+    .student-total {
+        width: 100%;
+        max-width: 300px;
+        height: 60px;
+    }
+    
+    .student-total-text {
+        font-size: 24px;
+    }
+    
+    .boyAndGirlPie {
+        width: 100%;
+        max-width: 300px;
+        height: 250px;
+        margin: 30px auto;
+    }
+    
+    .student-form-title td,
+    .class-form-title td,
+    .teacher-form-title td {
+        font-size: 16px;
+        height: 40px;
+    }
+    
+    .student-form-item td,
+    .class-form-item td,
+    .teacher-form-item td {
+        font-size: 14px;
+        height: 40px;
+    }
+    
+    .class-search-box {
+        flex-wrap: wrap;
+    }
+    
+    .class-search-select {
+        width: 120px !important;
+    }
+    
+    .class-search-input {
+        min-width: 150px;
+    }
+}
+
+/* 手机 (576px - 768px) */
+@media screen and (max-width: 768px) {
+    .left-text {
+        font-size: 18px;
+    }
+    
+    .nav-list li {
+        font-size: 14px;
+        padding: 6px 10px !important;
+        margin: 3px 5px;
+    }
+    
+    .userMessage {
+        font-size: 14px;
+        margin: auto 10px;
+    }
+    
+    .userMessage::after {
+        font-size: 24px;
+    }
+    
+    #editPasswordBtn {
+        padding: 3px 10px;
+        font-size: 14px;
+    }
+    
+    .page.visible {
+        padding: 10px;
+    }
+    
+    .dash-navigation {
+        font-size: 16px;
+    }
+    
+    .dash-item li {
+        font-size: 14px;
+        padding: 10px 5px;
+    }
+    
+    .student-edit-box {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+    
+    .student-edit-box button {
+        width: 100%;
+    }
+    
+    .class-search-box {
+        padding: 5px;
+        gap: 5px;
+    }
+    
+    .class-search-select {
+        width: 100% !important;
+    }
+    
+    .class-search-input {
+        width: 100%;
+    }
+    
+    .student-form-title td,
+    .class-form-title td,
+    .teacher-form-title td {
+        font-size: 14px;
+        height: 35px;
+        padding: 5px;
+    }
+    
+    .student-form-item td,
+    .class-form-item td,
+    .teacher-form-item td {
+        font-size: 12px;
+        height: 35px;
+        padding: 5px;
+    }
+    
+    .student-form-item button,
+    .class-form-item button {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+    
+    .modal-dialog {
+        margin: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    .modal-body {
+        padding: 15px;
+    }
+    
+    .student-add-box input,
+    .student-add-box select {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+/* 小手机 (小于576px) */
+@media screen and (max-width: 576px) {
+    .left-text {
+        font-size: 16px;
+        letter-spacing: 1px;
+    }
+    
+    .nav-list li {
+        font-size: 12px;
+        margin: 2px;
+    }
+    
+    .dash-item {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .dash-item li {
+        font-size: 12px;
+    }
+    
+    .student-total {
+        max-width: 100%;
+        height: 50px;
+    }
+    
+    .student-total-text {
+        font-size: 20px;
+    }
+    
+    .boyAndGirlPie {
+        height: 200px;
+    }
+    
+    .student-form-title td:nth-child(n+6),
+    .student-form-item td:nth-child(n+6) {
+        display: none;
+    }
+    
+    .class-form-title td:nth-child(n+6),
+    .class-form-item td:nth-child(n+6) {
+        display: none;
+    }
+    
+    .teacher-form-title td:nth-child(n+5),
+    .teacher-form-item td:nth-child(n+5) {
+        display: none;
+    }
+    
+    .modal-title {
+        font-size: 18px;
+    }
+    
+    .modal-footer button {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+}
+
+/* 表格响应式处理 - 横向滚动 */
+.student-form,
+.class-form,
+.teacher-form {
+    overflow-x: auto;
+}
+
+.student-form table,
+.class-form table,
+.teacher-form table {
+    min-width: 100%;
+    width: max-content;
+}
+
+/* 模态框响应式 */
+@media screen and (max-width: 576px) {
+    .modal-content {
+        border-radius: 10px;
+    }
+    
+    .modal-body .mb-3 {
+        margin-bottom: 10px;
+    }
+    
+    .modal-body label {
+        font-size: 14px;
+    }
+    
+    .modal-body input,
+    .modal-body select {
+        font-size: 14px;
+    }
+}
+
+/* 按钮响应式 */
+@media screen and (max-width: 576px) {
+    .btn {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+    
+    .btn-lg {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+}
+
+/* 仪表盘图表响应式 */
+@media screen and (max-width: 992px) {
+    #myPieChart,
+    #collageLineChart {
+        max-width: 100%;
+        height: auto !important;
+    }
+}

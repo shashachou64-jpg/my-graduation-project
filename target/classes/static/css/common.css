@@ -1,0 +1,29 @@
+.wrapper{
+    margin: 0 auto;
+    width: 1580px;
+}
+
+button {
+    background: none; /* 移除背景色 */
+    padding: 0; /* 移除内边距 */
+    font: inherit; /* 继承字体样式 */
+}
+button:focus {
+  outline: none;
+}
+
+/* 移除活动状态的效果 */
+button:active {
+  transform: none;
+}
+/* 完全移除密码框默认样式 */
+input[type="password"] {
+  /* 移除边框和轮廓 */
+  border: none;
+  outline: none;
+}
+input {
+  /* 方法1：使用内边距 */
+  padding-left: 15px;  /* 文字距离左边框10px */
+
+}

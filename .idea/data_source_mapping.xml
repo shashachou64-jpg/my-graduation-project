@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/src/main/java/com/cjy/mapper/CollegeMapper.java" value="85a5ea41-14a4-4b9d-add3-e26cf0f18e3e" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/cjy/mapper/CourseMapper.java" value="85a5ea41-14a4-4b9d-add3-e26cf0f18e3e" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/cjy/mapper/MajorMapper.java" value="85a5ea41-14a4-4b9d-add3-e26cf0f18e3e" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/cjy/mapper/PositionMapper.java" value="85a5ea41-14a4-4b9d-add3-e26cf0f18e3e" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/cjy/mapper/StudentMapper.java" value="85a5ea41-14a4-4b9d-add3-e26cf0f18e3e" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/cjy/mapper/TeacherMapper.java" value="85a5ea41-14a4-4b9d-add3-e26cf0f18e3e" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/cjy/mapper/UserMapper.java" value="85a5ea41-14a4-4b9d-add3-e26cf0f18e3e" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/85a5ea41-14a4-4b9d-add3-e26cf0f18e3e/console.sql" value="85a5ea41-14a4-4b9d-add3-e26cf0f18e3e" />
+    <file url="das://85a5ea41-14a4-4b9d-add3-e26cf0f18e3e/schema/student_management.sql" value="85a5ea41-14a4-4b9d-add3-e26cf0f18e3e" />
+  </component>
+</project>

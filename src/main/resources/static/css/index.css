@@ -1,0 +1,454 @@
+body {
+    box-sizing: border-box;
+    background-color: #000;
+    color: #fff;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+}
+
+.visible {
+    display: none;
+}
+
+.Navigation {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    justify-content: space-between;
+}
+
+.schoolName {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logoText {
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.NavigationLoginBtn {
+    display: flex;
+    justify-content: space-evenly;
+    height: 50px;
+    width: 100px;
+    line-height: 50px;
+    text-align: center;
+    font-size: 25px;
+    color: #000;
+    background-color: #fff;
+    border: none;
+    border-radius: 25px;
+}
+
+.NavigationLoginBtn:hover {
+    background-color: #00000000;
+    border: #fff solid 2px;
+    box-shadow: 2px 2px 5px 5px #fff;
+    color: #fff;
+    cursor: pointer;
+}
+
+.logoName {
+    display: flex;
+}
+
+.logoTxt {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+/* 主要部分 */
+.mainPart {
+    margin-top: 50px;
+    height: 100%;
+    display: flex;
+    justify-content: center; /* 居中显示 loginBox */
+    align-items: center; /* 垂直居中 */
+    position: relative;
+}
+
+/* 左边照片 */
+.leftImgBox {
+    width: 50%;
+    height: 50%;
+    background-image: url(/img/photo1.png);
+    background-color: #fff;
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    opacity: 0.7;
+}
+
+/* 右边照片 */
+.rightImgBox {
+    width: 50%;
+    height: 50%;
+    background-image: url(/img/photo2.png);
+    background-color: #fff;
+    background-size: cover;
+    background-position: center;
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    opacity: 0.7;
+    z-index: 1;
+}
+
+/* 登陆框 */
+.loginBox {
+    width: 500px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1); /* 半透明背景 */
+    backdrop-filter: blur(10px); /* 磨砂模糊效果 */
+    border-radius: 20px;
+    z-index: 2;
+
+}
+
+.LoginNameTxt {
+    display: flex;
+    justify-content: center;
+}
+
+.l {
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.loginUserBox {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 30px;
+    justify-content: center;
+}
+
+.loginUserInputBox {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    /* 可选：设置固定高度以更好地控制垂直位置 */
+    height: 40px;
+}
+
+.UserInputTxt {
+    font-size: 25px;
+    font-weight: 15px;
+    margin-right: 15px;
+}
+
+.loginUserInput {
+    width: 300px;
+    height: 30px;
+    border-radius: 20px;
+    border: none;
+}
+
+.loginPwdBox {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 30px;
+    justify-content: center;
+}
+
+.loginPwdInputBox {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    /* 可选：设置固定高度以更好地控制垂直位置 */
+    height: 40px;
+}
+
+.pwdInputTxt {
+    font-size: 25px;
+    font-weight: 15px;
+    margin-right: 15px;
+}
+
+.loginPwdInput {
+    width: 300px;
+    height: 30px;
+    border-radius: 20px;
+    border: none;
+    margin-left: 25px;
+}
+
+.loginBtnBox {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.loginBtn_loginBox {
+
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+
+}
+
+.loginBtn_login {
+    height: 40px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: #fff solid 1px;
+    border-radius: 20px;
+
+}
+
+.d {
+    margin-left: 5px;
+    margin-right: 5px;
+    color: #fff;
+}
+
+.loginBtn_login:hover {
+    background-color: #00000000;
+    border: #fff solid 2px;
+    box-shadow: 1px 1px 5px 5px #fff;
+    color: #fff;
+    cursor: pointer;
+}
+
+.signUpBtn_loginBox {
+
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+
+}
+
+.signupBtn_login {
+    height: 40px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: #fff solid 1px;
+    border-radius: 20px;
+
+}
+
+.d {
+    margin-left: 5px;
+    margin-right: 5px;
+    color: #fff;
+}
+
+.signupBtn_login:hover {
+    background-color: #00000000;
+    border: #fff solid 2px;
+    box-shadow: 1px 1px 5px 5px #fff;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* 注册框 */
+.signUpBox {
+    width: 500px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1); /* 半透明背景 */
+    backdrop-filter: blur(10px); /* 磨砂模糊效果 */
+    border-radius: 20px;
+    z-index: 3;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.signUpNameTxt {
+    display: flex;
+    justify-content: center;
+}
+
+.z {
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.signUpUserBox {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 30px;
+    justify-content: center;
+}
+
+.signUpUserTxt {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+}
+
+.signUpUserInputBox {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    /* 可选：设置固定高度以更好地控制垂直位置 */
+}
+
+.signUpUserInput {
+    width: 300px;
+    height: 30px;
+    border-radius: 20px;
+    border: none;
+    margin-left: 15px;
+}
+
+
+.signUpPwdBox {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 30px;
+    justify-content: center;
+}
+
+.signUpPwdTxt {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+}
+
+.signUpPwdInputBox {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    /* 可选：设置固定高度以更好地控制垂直位置 */
+}
+
+.signUpPwdCertainBox {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 30px;
+    justify-content: center;
+}
+
+.signUpPwdInput {
+    width: 300px;
+    height: 30px;
+    border-radius: 20px;
+    border: none;
+    margin-left: 50px;
+}
+
+.signUpPwdCertainTxt {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+}
+
+.signUpPwdCertainInputBox {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    /* 可选：设置固定高度以更好地控制垂直位置 */
+}
+
+.signUpPwdCertainInput {
+    width: 300px;
+    height: 30px;
+    border-radius: 20px;
+    border: none;
+    margin-left: 25px;
+    margin-right: 30px;
+}
+
+.signUpBtnBox_signUp {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.signUpBtnBox {
+    margin-left: 10px;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.signUpBtnSU {
+    height: 40px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: #fff solid 1px;
+    border-radius: 20px;
+
+}
+
+.signUpText {
+    margin-left: 5px;
+    margin-right: 5px;
+    color: #fff;
+}
+
+
+.returnBtnBox {
+    margin-left: 10px;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.returnBtnSU {
+    height: 40px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: #fff solid 1px;
+    border-radius: 20px;
+
+}
+
+.signUpBtnSU:hover {
+    background-color: #00000000;
+    border: #fff solid 2px;
+    box-shadow: 1px 1px 5px 5px #fff;
+    color: #fff;
+    cursor: pointer;
+
+}
+
+.returnBtnSU:hover {
+    background-color: #00000000;
+    border: #fff solid 2px;
+    box-shadow: 1px 1px 5px 5px #fff;
+    color: #fff;
+    cursor: pointer;
+
+}
+
+/* 登陆提示框 */
+.loginAlertBox {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 0, 0, 0.8); /* 半透明红色背景 */
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 4;
+    transition: all 0.3s ease;
+}
+
+.show {
+    display: none;
+}

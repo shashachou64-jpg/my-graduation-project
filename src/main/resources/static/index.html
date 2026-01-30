@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登陆</title>
+    <link rel="stylesheet" href="/BootStrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="icon" href="/favicon.ico">
+</head>
+
+<body>
+
+    <!-- 登陆提示框 -->
+    <div class="loginAlertBox show">
+        <div class="loginAlert">
+            用户名或密码错误
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="container Navigation">
+        <!-- 学校名称 -->
+        <div class="schoolName">
+            <div class="logoText">T</div>
+            <div class="logoText">K</div>
+            <div class="logoText">K</div>
+            <div class="logoText">C</div>
+        </div>
+
+        <!-- 标题 -->
+        <div class="logoName">
+            <div class="logoTxt">学</div>
+            <div class="logoTxt">生</div>
+            <div class="logoTxt">分</div>
+            <div class="logoTxt">组</div>
+            <div class="logoTxt">管</div>
+            <div class="logoTxt">理</div>
+            <div class="logoTxt">系</div>
+            <div class="logoTxt">统</div>
+        </div>
+        <!-- 导航栏登陆按钮 -->
+        <div class="NavigationLoginBtnContainer">
+            <button class="NavigationLoginBtn">
+                <div class="NavigationLoginBtnTxt">登</div>
+                <div class="NavigationLoginBtnTxt">陆</div>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- 主要部分 -->
+    <div class="container mainPart">
+        <!-- 左边照片 -->
+        <div class="leftImgBox">
+        </div>
+        <!-- 右边照片 -->
+        <div class="rightImgBox">
+        </div>
+
+        <!-- 登陆框 -->
+        <div class="loginBox visible">
+            <div class="LoginNameTxt" id="loginBtn">
+                <div class="l">登</div>
+                <div class="l">录</div>
+            </div>
+            <!-- 用户框 -->
+            <div class="loginUserBox">
+                <div class="UserInputTxt">
+                    用户名:
+                </div>
+                <div class="loginUserInputBox">
+                    <input type="text" class="loginUserInput loginUsername" id="loginUsername" placeholder="请输入用户名">
+                </div>
+            </div>
+            <!-- 密码框 -->
+            <div class="loginPwdBox">
+                <div class="pwdInputTxt">
+                    密码:
+                </div>
+                <div class="loginPwdInputBox">
+                    <input type="password" class="loginPwdInput loginPassword" id="loginPassword" placeholder="请输入密码">
+                </div>
+            </div>
+
+            <!-- 登陆按钮 -->
+            <div class="loginBtnBox">
+                <div class="loginBtn_loginBox">
+                    <button class="loginBtn_login" id="loginToLoginBtn">
+                        <div class="d">登</div>
+                        <div class="d">录</div>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+<script src="./js/request.js"></script>
+<script src="./js/index.js"></script>
+
+<script>
+    const NavigationLoginBtn = document.querySelector('.NavigationLoginBtn')
+    const loginBox = document.querySelector('.loginBox')
+    const signUpBox = document.querySelector('.signUpBox')
+    const signupBtn_login = document.querySelector('.signupBtn_login')
+    const returnBtnSU = document.querySelector('.returnBtnSU')
+    NavigationLoginBtn.addEventListener('click', () => {
+        loginBox.classList.remove('visible')
+    })
+
+
+    //提示框功能
+    const loginAlertBox = document.querySelector('.loginAlertBox')
+
+    function showLoginAlert(msg) {
+        //显示提示框
+        loginAlertBox.classList.remove('show')
+        //设置提示内容
+        loginAlertBox.innerHTML = msg
+        // 2秒后隐藏提示框
+        setTimeout(() => {
+            //隐藏提示框
+            loginAlertBox.classList.add('show')
+            loginAlertBox.classList.remove('bgstyle')
+        }, 2000);
+    }
+
+
+</script>
+
+</html>

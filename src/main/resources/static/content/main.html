@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/main_profile.css">
+    <link rel="stylesheet" href="../iconfont/iconfont.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Bootstrap Bundle JS（包含 Popper） -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <div class="alert alert-danger" role="alert" id="alert-DangerB"
+        style="position: fixed; left: 50%; transform: translateX(-50%); top: 30px; transition: all 0.3s ease; display: none; opacity: 0; z-index: 9999;">
+        A simple danger alert—check it out!
+    </div>
+    <div class="alert alert-success" role="alert" id="alert-SuccessMessage" style="position: fixed; left: 50%; transform: translateX(-50%); top: 70px;
+            transition: all 0.3s ease; display: none; opacity: 0; z-index: 9999;">
+        操作成功！
+    </div>
+    <!-- 左边栏 -->
+    <div class="left">
+        <div class="left-text">
+            学生分组管理系统
+        </div>
+
+        <div class="navigation ">
+            <ul class="nav-list">
+                <li class="nav-item nav-active"><a href=""></a>仪表盘</li>
+                <li class="nav-item">学生管理</li>
+                <li class="nav-item">课程管理</li>
+                <li class="nav-item">教师管理</li>
+                <li class="nav-item">系统设置</li>
+            </ul>
+        </div>
+    </div>
+    <!-- 右边栏 -->
+    <div class="right">
+        <!-- 个人信息 -->
+        <div class="userMessageBox">
+            <div class="userMessage" id="userMessage">
+                你好xxx
+            </div>
+
+            <button type="button" class="btn btn-primary" id="editPasswordBtn">修改密码</button>
+        </div>
+
+        <!-- 页面内容 -->
+        <!-- 仪表盘 -->
+        <div id="dashborad" class="page main-page visible">
+            <div class="dash-navigation">
+                <ul class="dash-item">
+                    <li class="dash-item-active">总学生</li>
+                    <li>总教师</li>
+                    <li>总课程</li>
+                </ul>
+            </div>
+            <!-- 第一页总学生 -->
+            <div id="dash-student" class="dash-sub-page dash-visible">
+                <div class="dash-item-page">
+                    <div class="student-total-page-left">
+                        <!-- 学生总数卡片 -->
+                        <div class="student-total">
+                            <div class="student-total-text">
+                                总学生数：1500
+                            </div>
+                        </div>
+                        <!-- 男女比例饼状图 -->
+                        <div class="boyAndGirlPie">
+                            <canvas id="myPieChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="student-total-page-right">
+                        <!-- 学院统计折现图 -->
+                        <canvas id="collageLineChart" width="100" height="100"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="dash-sub-page">
+                <!-- 第二页总课程 -->
+                <div class="page dash-item-page">
+                    asdkjf
+                </div>
+            </div>
+            <div class="dash-sub-page">
+                <!-- 第三页总教师 -->
+                <div class="page dash-item-page">
+                    asdkjfdsafasdf
+                </div>
+            </div>
+        </div>
+        <!-- 学生管理 -->
+        <div id="studentManger" class="page main-page">
+            <div class="student-edit-box">
+                <!-- 导入按钮（左侧） -->
+                <!-- 在学生管理区域添加 -->
+                <input type="file" id="studentImportInput" accept=".xlsx,.xls" style="display:none;">
+                <button type="button" class="btn btn-success" id="studentImportBtn">导入学生</button>
+                <!-- 添加按钮（右侧） -->
+                <button type="button" class="btn btn-primary student-add-btn" id="addStudentBtn">
+                    添加学生
+                </button>
+            </div>
+            <!-- 学生搜索区域（布局与课程管理一致） -->
+            <div class="class-search-box" id="studentSearchBox">
+                <select class="form-select class-search-select student-search-select" id="studentSearchSelect">
+                    <option value="name">姓名</option>
+                    <option value="college">学院</option>
+                    <option value="major">专业</option>
+                    <option value="number">学号</option>
+                </select>
+                <input type="text" class="form-control class-search-input student-search-input" id="studentSearchInput"
+                    placeholder="请输入学生相关信息进行搜索">
+                <button type="button" class="btn btn-primary class-search-btn student-search-btn"
+                    id="studentSearchBtn">搜索</button>
+                <button type="button" class="btn btn-primary class-reset-btn student-reset-btn"
+                    id="studentResetBtn">重置</button>
+            </div>
+            <!-- 添加学生模态框 -->
+            <div class="modal fade addStudentModal" id="addStudentModal" tabindex="-1"
+                aria-labelledby="studentModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="studentModalLabel">添加学生</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="student-add-box">
+                                姓名：<input type="text" class="form-control" id="stuNameInput" placeholder="请输入姓名">
+                                学号：<input type="text" class="form-control" id="stuNumberInput" placeholder="请输入学号">
+                                学院：<select class="form-select" id="stuCollegeSelect"></select>
+                                专业：<select class="form-select" id="stuMajorSelect">
+                                    <option value="">请选择专业</option>
+                                </select>
+                                入学年份：<select class="form-select" id="stuYearSelect">
+                                    <option value="">请选择入学年份</option>
+                                </select>
+                                班级：<select class="form-select" id="stuClassSelect"></select>
+
+                                性别：<select class="form-select" id="stuGenderSelect">
+                                    <option value="">请选择性别</option>
+                                    <option value="男">男</option>
+                                    <option value="女">女</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary stu-add-btN" id="saveStudentBtn">完成</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="student-form" id="studentForm">
+                <table class="student-form-table">
+                    <thead class="student-form-title">
+                        <tr>
+                            <td>序号</td>
+                            <td>学号</td>
+                            <td>姓名</td>
+                            <td>学院</td>
+                            <td>专业</td>
+                            <td>班级</td>
+                            <td>入学年份</td>
+                            <td>性别</td>
+                            <td>操作</td>
+                        </tr>
+                    </thead>
+                    <tbody class="student-list" id="studentList">
+                        <tr class="student-form-item">
+                            <td>1</td>
+                            <td>20220001</td>
+                            <td>张三</td>
+                            <td>计算机科学与技术学院</td>
+                            <td>计算机科学与技术</td>
+                            <td>2ban</td>
+                            <td>2022</td>
+                            <td>男</td>
+                            <td>
+                                <button type="button" class="btn btn-primary stu-list-edit-btn"
+                                    id="studentEditBtn">修改</button>
+                                <button type="button" class="btn btn-danger stu-list-delete-btn"
+                                    id="studentDeleteBtn">删除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+            <!-- 修改学生信息模态框 -->
+            <div class="modal fade studentEditModal" id="studentEditModal" tabindex="-1"
+                aria-labelledby="studentModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="studentModalLabel">修改学生</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="student-listEdit-box">
+                                姓名：<input type="text" class="form-control stu-edit-name" id="stuNameEditInput"
+                                    placeholder="请输入姓名" readonly>
+                                学号：<input type="text" class="form-control stu-edit-number" id="stuNumberEditInput"
+                                    placeholder="请输入学号" readonly>
+                                学院：<select class="form-select stu-edit-college" id="collegeEditSelect"></select>
+                                专业：<select class="form-select stu-edit-major" id="majorEditSelect">
+                                    <option value="">请选择专业</option>
+                                </select>
+                                入学年份：<select class="form-select stu-edit-year" id="yearEditSelect">
+                                    <option value="">请选择入学年份</option>
+                                </select>
+                                班级：<select class="form-select stu-edit-class" id="classEditSelect">
+                                    <option value="">请选择班级</option>
+                                </select>
+
+                                性别：<select class="form-select stu-edit-gender" id="genderEditSelect">
+                                    <option value="">请选择性别</option>
+                                    <option value="男">男</option>
+                                    <option value="女">女</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary stu-edit-BTN"
+                                id="studentEditSaveBtn">完成</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 课程管理 -->
+        <div id="classManger" class="page main-page">
+            <!-- 添加课程按钮 -->
+            <div class="class-add-btn-box">
+                <button type="button" class="btn btn-primary course-add-btn" data-bs-toggle="modal"
+                    data-bs-target="#courseModal">
+                    添加课程
+                </button>
+            </div>
+
+            <!-- 修改课程模态框 -->
+            <div class="modal fade courseEditModal" id="courseEditModal" tabindex="-1"
+                aria-labelledby="courseEditModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="courseEditModalLabel">修改课程</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- 隐藏课程ID -->
+                            <input type="hidden" id="courseEditId">
+                            <input type="hidden" id="courseEditCollegeId">
+
+                            <div class="mb-3">
+                                <label for="courseEditNameInput" class="form-label">课程名称 <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="courseEditNameInput" placeholder="请输入课程名称"
+                                    required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="courseEditCollegeSelect" class="form-label">院系 <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="courseEditCollegeSelect" required>
+                                    <option value="">请选择院系...</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="courseEditCreditInput" class="form-label">学分 <span
+                                        class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="courseEditCreditInput" placeholder="请输入学分"
+                                    min="0" step="0.5" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="courseEditMaxNumInput" class="form-label">班级容量 <span
+                                        class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="courseEditMaxNumInput"
+                                    placeholder="请输入班级容量" min="1" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary course-edit-save-btn"
+                                id="courseEditSaveBtn">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 添加课程模态框 -->
+            <div class="modal fade" id="courseModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="courseModalLabel">添加课程</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="courseNameInput" class="form-label">课程名称 <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="classNumberEditInput" placeholder="请输入课程名称"
+                                    required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="classCollegeAddSelect" class="form-label">院系 <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="classCollegeAddSelect" required>
+                                    <option value="">请选择院系...</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="courseEditInput" class="form-label">学分 <span
+                                        class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="courseEditInput" placeholder="请输入学分"
+                                    min="0" step="0.5" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="classGenderEditInput" class="form-label">班级容量 <span
+                                        class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="classGenderEditInput"
+                                    placeholder="请输入班级容量" min="1" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="classStuListInput" class="form-label">
+                                    导入学生名单 <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" class="form-control" id="classStuListInput"
+                                    accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                                    placeholder="请选择Excel文件" required>
+                                <div class="form-text">
+                                    支持的文件格式：.xlsx (Excel 2007+) 或 .xls (Excel 97-2003)
+                                </div>
+                                <div id="file-validation-msg" class="mt-2 text-danger" style="display: none;"></div>
+                                <div id="file-info" class="mt-2 text-success" style="display: none;"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary course-added-btn"
+                                id="class-add-btn">完成</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 搜索区域 -->
+            <div class="class-search-box">
+                <!-- 根据不同条件搜索课程 -->
+                <select class="form-select class-search-select" id="classSearchSelect">
+                    <option value="name">课程名称</option>
+                    <option value="college">院系</option>
+                </select>
+
+                <input type="text" class="form-control class-search-input" id="classSearchInput"
+                    placeholder="请输入课程名称进行搜索">
+                <button type="button" class="btn btn-primary class-search-btn" id="classSearchBtn">搜索</button>
+                <button type="button" class="btn btn-primary class-reset-btn" id="classResetBtn">重置</button>
+
+            </div>
+            <!-- 课程表单 -->
+            <div class="class-form">
+                <table>
+                    <thead>
+                        <tr class="class-form-title">
+                            <td>序号</td>
+                            <td>课程名称</td>
+                            <td>院系</td>
+                            <td>学分</td>
+                            <td>班级容量</td>
+                            <td>已有学生</td>
+                            <td>操作</td>
+                        </tr>
+                    </thead>
+                    <tbody class="class-form-body" id="class-form-body">
+                        <tr class="class-form-item">
+                            <td>1</td>
+                            <td>数据结构</td>
+                            <td>信息科学与技术学院</td>
+                            <td>4</td>
+                            <td>60</td>
+                            <td><a href="#">student_list.xlsx</a></td>
+                            <td>
+                                <button type="button" class="btn btn-primary class-edit-btn">修改</button>
+                                <button type="button" class="btn btn-danger class-delete-btn">删除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+        </div>
+
+        <!-- 教师管理 -->
+        <div id="teacherManger" class="page main-page">
+            <div class="teacher-edit-box">
+                <!-- 导入按钮（左侧） -->
+                <button type="button" class="btn btn-primary teacher-import-btn" id="teacherImportBtn">导入</button>
+                <!-- 添加按钮（右侧） -->
+                <button type="button" class="btn btn-primary teacher-edit-btn" data-bs-toggle="modal"
+                    data-bs-target="#teacherModal">
+                    添加教师
+                </button>
+            </div>
+            <!-- 教师搜索区域（布局与课程管理一致） -->
+            <div class="class-search-box teacher-search-box">
+                <select class="form-select class-search-select teacher-search-select" id="teacherSearchSelect">
+                    <option value="number">工号</option>
+                    <option value="name">姓名</option>
+                    <option value="position">职位</option>
+                </select>
+                <input type="text" class="form-control class-search-input teacher-search-input" id="teacherSearchInput"
+                    placeholder="请输入教师相关信息进行搜索">
+                <button type="button" class="btn btn-primary class-search-btn teacher-search-btn"
+                    id="teacherSearchBtn">搜索</button>
+                <button type="button" class="btn btn-primary class-reset-btn teacher-reset-btn"
+                    id="teacherResetBtn">重置</button>
+            </div>
+            <!-- 修改教师模态框 -->
+            <div class="modal fade" id="teacherEditModal" tabindex="-1" aria-labelledby="reacherEditModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="teacherEditModalLabel">修改教师</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            工号：<input type="text" class="form-control" id="teaNumberEditInput" placeholder="请输入工号"
+                                readonly>
+                            姓名：<input type="text" class="form-control" id="teaNameEditInput" placeholder="请输入姓名">
+                            学院：<select class="form-select tea-edit-college1" id="teaCollegeEditSelect">
+                                <option value="">请选择院系</option>
+                                <option value="1">人文与传播学院</option>
+                                <option value="2">法学院</option>
+                                <option value="3">英语语言文化学院</option>
+                                <option value="4">日本语言与文化学院</option>
+                                <option value="5">设计与创意学院</option>
+                                <option value="6">音乐与舞蹈学院</option>
+                                <option value="7">国际商务学院</option>
+                                <option value="8">会计与金融学院</option>
+                                <option value="9">管理学院</option>
+                                <option value="10">信息科学与技术学院</option>
+                                <option value="11">机电工程与自动化学院</option>
+                                <option value="12">土木工程学院</option>
+                                <option value="13">建筑学院</option>
+                                <option value="14">环境科学与工程学院</option>
+                            </select>
+                            职位：<select class="form-select tea-edit-position1" id="teaPositionEditSelect"></select>
+                            性别：<select class="form-select" id="teaGenderEditSelect">
+                                <option value="">请选择性别</option>
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="tea-edit-btn">完成</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 添加教师模态框模态框 -->
+            <div class="modal fade" id="teacherModal" tabindex="-1" aria-labelledby="teacherModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="teacherModalLabel">添加教师</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            姓名：<input type="text" class="form-control" id="teaNameInput" placeholder="请输入姓名">
+                            学院：<select class="form-select" id="teaCollegeSelect">
+                                <option value="">请选择院系</option>
+                                <option value="1">人文与传播学院</option>
+                                <option value="2">法学院</option>
+                                <option value="3">英语语言文化学院</option>
+                                <option value="4">日本语言与文化学院</option>
+                                <option value="5">设计与创意学院</option>
+                                <option value="6">音乐与舞蹈学院</option>
+                                <option value="7">国际商务学院</option>
+                                <option value="8">会计与金融学院</option>
+                                <option value="9">管理学院</option>
+                                <option value="10">信息科学与技术学院</option>
+                                <option value="11">机电工程与自动化学院</option>
+                                <option value="12">土木工程学院</option>
+                                <option value="13">建筑学院</option>
+                                <option value="14">环境科学与工程学院</option>
+                            </select>
+                            职位：<select class="form-select" id="teaPositionSelect"></select>
+                            性别：<select class="form-select" id="teaGenderSelect">
+                                <option value="">请选择性别</option>
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="tea-add-btn">完成</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--教师表单-->
+            <div class="teacher-form">
+                <table>
+                    <thead>
+                        <tr class="teacher-form-title">
+                            <td>序号</td>
+                            <td>工号</td>
+                            <td>姓名</td>
+                            <td>职位</td>
+                            <td>学院</td>
+                            <td>性别</td>
+                            <td>操作</td>
+                        </tr>
+                    </thead>
+                    <tbody class="teacher-list">
+                        <tr class="teacher-form-item">
+                            <td>1</td>
+                            <td>张三</td>
+                            <td>讲师</td>
+                            <td>计算机科学与技术学院</td>
+                            <td>男</td>
+                            <td>
+                                <button type="button" class="btn btn-primary">修改</button>
+                                <button type="button" class="btn btn-danger">删除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 系统管理 -->
+        <div id="userManger" class="page main-page">
+            <div class="profile-container" id="profileContainer">
+                <div class="profile-header">
+                    <h3>个人信息</h3>
+                    <button type="button" class="btn btn-primary" id="editProfileBtn">编辑资料</button>
+                </div>
+
+                <div class="profile-content">
+
+                    <div class="profile-info">
+                        <div class="info-item">
+                            <label>用户名：</label>
+                            <span id="profileUserName">加载中...</span>
+                        </div>
+                        <div class="info-item">
+                            <label>姓名：</label>
+                            <span id="profileName">加载中...</span>
+                        </div>
+                        <div class="info-item">
+                            <label>性别：</label>
+                            <span id="profileSex">加载中...</span>
+                        </div>
+                        <div class="info-item">
+                            <label>职位：</label>
+                            <span id="profileRole">加载中...</span>
+                        </div>
+                        <div class="info-item">
+                            <label>电话：</label>
+                            <span id="profilePhone">加载中...</span>
+                        </div>
+                        <div class="info-item">
+                            <label>邮箱：</label>
+                            <span id="profileEmail">加载中...</span>
+                        </div>
+                        <div class="info-item">
+                            <label>地址：</label>
+                            <span id="profileAddress">加载中...</span>
+                        </div>
+                        <div class="info-item">
+                            <label>所属单位：</label>
+                            <span>厦门大学嘉庚学院</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 修改密码模态框 -->
+        <div class="modal fade" id="editPasswordModal" tabindex="-1" aria-labelledby="editPasswordModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editPasswordModalLabel">修改密码</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editPasswordForm">
+                            <div class="mb-3">
+                                <label for="oldPassword" class="form-label">旧密码</label>
+                                <input type="password" class="form-control" id="oldPassword" placeholder="请输入旧密码">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label">新密码</label>
+                                <input type="password" class="form-control" id="newPassword" placeholder="请输入新密码">
+                                <div class="text-danger" id="newPasswordFormat" style="font-size: 12px; display: none;">
+                                    用户密码必须大于等于8位并且有数字和字母
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">确认新密码</label>
+                                <input type="password" class="form-control" id="confirmPassword" placeholder="请再次输入新密码">
+                                <div class="text-danger" id="passwordMismatchTip"
+                                    style="font-size: 12px; display: none;">
+                                    两次输入的密码不一致
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="savePasswordBtn">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 编辑资料模态框 -->
+        <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProfileModalLabel">编辑资料</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editProfileForm">
+                            <div class="mb-3">
+                                <label for="editUsername" class="form-label">用户名</label>
+                                <input type="text" class="form-control" id="editUsername" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editName" class="form-label">姓名</label>
+                                <input type="text" class="form-control" id="editName" placeholder="请输入姓名" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editSex" class="form-label">性别</label>
+                                <select class="form-select" id="editSex">
+                                    <option value="男">男</option>
+                                    <option value="女">女</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editPhone" class="form-label">电话</label>
+                                <input type="text" class="form-control" id="editPhone" placeholder="请输入电话">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editEmail" class="form-label">邮箱</label>
+                                <input type="email" class="form-control" id="editEmail" placeholder="请输入邮箱">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editAddress" class="form-label">地址</label>
+                                <input type="text" class="form-control" id="editAddress" placeholder="请输入地址">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="saveProfileBtn">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 批量导入模态框 -->
+        <div class="modal fade" id="batchImportModal" tabindex="-1" aria-labelledby="batchImportModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="batchImportModalLabel">错误信息</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="batchImportForm">
+                            详情：<textarea class="form-control" id="batchImportDetail" readonly></textarea>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="batchImportBtn">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+
+</body>
+<script src="../js/request.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../js/main_student.js"></script>
+<script src="../js/main_teacher.js"></script>
+<script src="../js/main_class.js"></script>
+<script src="../js/main_profile.js"></script>
+<script src="../js/main_comon.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script>
+    // 总学生数的饼状图
+    const ctx = document.getElementById('myPieChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',  // 或 'doughnut' 环形图
+        data: {
+            labels: ['男生', '女生'],
+            datasets: [{
+                data: [750, 500],
+                backgroundColor: ['#3498db', '#e74c3c'],
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: { enabled: true }
+            }
+        }
+    }
+    );
+    // 学院统计折线图
+    const ctxLine = document.getElementById('collageLineChart').getContext('2d');
+    new Chart(ctxLine, {
+        data: {
+            labels: ['信息科学与技术学院', '人文传播学院', '法学院', '会计与金融学院', '机自学院'],
+            datasets: [{
+                type: 'line',
+                label: '各学院学生人数',
+                data: [400, 300, 200, 350, 250],
+                fill: true,
+                borderColor: '#2ecc71',
+                tension: 0.4,
+                borderWidth: 3,
+                backgroundColor: 'rgba(46, 204, 113,0.2)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+
+
+        }
+    });
+
+    // 左边栏点击业务
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = document.querySelectorAll('.main-page');
+    navItems.forEach((item, index) => {
+        item.addEventListener('click', () => {
+            //移除所有高亮
+            navItems.forEach(nav => nav.classList.remove('nav-active'));
+
+            //给当前点击的页面添加高亮
+            item.classList.add('nav-active');
+
+            //隐藏所有页面
+            pages.forEach(page => page.classList.remove('visible'));
+
+            //添加页面显示
+            pages[index].classList.add('visible');
+        })
+    })
+
+    // 仪表盘列表点击业务
+    const dashItems = document.querySelectorAll('.dash-item li');
+    const dashPages = document.querySelectorAll('.dash-sub-page');
+    dashItems.forEach((item, index) => {
+        item.addEventListener('click', () => {
+            //移除所有高亮
+            dashItems.forEach(dash => dash.classList.remove('dash-item-active'));
+
+            //给当前点击的页面添加高亮
+            item.classList.add('dash-item-active');
+
+            //隐藏所有页面
+            dashPages.forEach(page => page.classList.remove('dash-visible'));
+            dashPages[index].classList.add('dash-visible');
+        })
+    })
+
+
+
+
+
+
+
+
+
+</script>
+
+</html>

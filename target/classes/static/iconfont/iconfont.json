@@ -1,0 +1,30 @@
+{
+  "id": "5090349",
+  "name": "毕业设计",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "11372773",
+      "name": "我的",
+      "font_class": "wode",
+      "unicode": "e8c6",
+      "unicode_decimal": 59590
+    },
+    {
+      "icon_id": "33986998",
+      "name": "更多",
+      "font_class": "gengduo",
+      "unicode": "e61e",
+      "unicode_decimal": 58910
+    },
+    {
+      "icon_id": "33987169",
+      "name": "进入",
+      "font_class": "jinru",
+      "unicode": "e621",
+      "unicode_decimal": 58913
+    }
+  ]
+}
