@@ -457,7 +457,8 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         public Result updateStuInfo(StudentDTO studentDTO) {
                 // 1.判断学院ID是否存在
                 Long count = collegeMapper
-                                .selectCount(new LambdaQueryWrapper<College>().eq(College::getId, studentDTO.getCollegeId()));
+                                .selectCount(new LambdaQueryWrapper<College>().eq(College::getId,
+                                                studentDTO.getCollegeId()));
                 if (count == 0) {
                         return Result.error("学院不存在");
                 }
@@ -488,12 +489,23 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
 
         @Override
         public Result deleteStudent(String number) {
-                /**
-                 * 删除学生信息
-                 * 1.删除学生表
-                 * 2.删除用户表
-                 * 3.删除个人信息表
-                 * 4.删除用户身份表
-                 */
+                try {
+                        /**
+                         * 删除学生信息
+                         * 1.删除学生表
+                         * 2.删除用户表
+                         * 3.删除个人信息表
+                         * 4.删除用户身份表
+                         */
+                        // 1.删除学生表
+                        studentMapper.delete(new LambdaQueryWrapper<Student>().eq(Student::getNumber, number));
+                        Long userId = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, number)).getId();
+                        userMapper.delete(new LambdaQueryWrapper<User>().eq(User::getId, userId));
+                        personalMapper.delete(new LambdaQueryWrapper<Personal>().eq(Personal::getUserId, userId));
+                        userWithIdentityMapper.delete(new LambdaQueryWrapper<UserWithIdentity>().eq(UserWithIdentity::getUserId, userId));
+                        return Result.success("删除成功");
+                } catch (Exception e) {
+                        throw new RuntimeException(e);
+                }
         }
 }
