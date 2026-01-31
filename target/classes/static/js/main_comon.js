@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //初始化导入功能
     initializeStudentImport()
+
 })
 
 
@@ -155,4 +156,20 @@ function showBatchImportModal(message) {
     document.getElementById('batchImportBtn').addEventListener('click', () => {
         batchImportModalInstance.hide()
     })
+}
+
+/**
+ * 获取学院列表
+ */
+async function getCollegeList() {
+    try {
+        const response = await axios({
+            url: '/college/list',
+            method: 'get',
+        })
+        return response.data.data
+    } catch (error) {
+        console.error('获取学院列表失败', error)
+        return []
+    }
 }

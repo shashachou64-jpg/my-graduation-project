@@ -428,7 +428,7 @@
                 <button type="button" class="btn btn-primary teacher-import-btn" id="teacherImportBtn">导入</button>
                 <!-- 添加按钮（右侧） -->
                 <button type="button" class="btn btn-primary teacher-edit-btn" data-bs-toggle="modal"
-                    data-bs-target="#teacherModal">
+                    data-bs-target="#addTeacherModal">
                     添加教师
                 </button>
             </div>
@@ -456,28 +456,22 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            工号：<input type="text" class="form-control" id="teaNumberEditInput" placeholder="请输入工号"
+                            工号：<input type="text" class="form-control" id="teaNumberEditInput" placeholder="请输入工号" v-model="form.username"
                                 readonly>
-                            姓名：<input type="text" class="form-control" id="teaNameEditInput" placeholder="请输入姓名">
-                            学院：<select class="form-select tea-edit-college1" id="teaCollegeEditSelect">
+                            姓名：<input type="text" class="form-control" id="teaNameEditInput" placeholder="请输入姓名" v-model="form.name">
+                            学院：<select class="form-select tea-edit-college1" id="teaCollegeEditSelect" v-model="form.collegeName">
                                 <option value="">请选择院系</option>
-                                <option value="1">人文与传播学院</option>
-                                <option value="2">法学院</option>
-                                <option value="3">英语语言文化学院</option>
-                                <option value="4">日本语言与文化学院</option>
-                                <option value="5">设计与创意学院</option>
-                                <option value="6">音乐与舞蹈学院</option>
-                                <option value="7">国际商务学院</option>
-                                <option value="8">会计与金融学院</option>
-                                <option value="9">管理学院</option>
-                                <option value="10">信息科学与技术学院</option>
-                                <option value="11">机电工程与自动化学院</option>
-                                <option value="12">土木工程学院</option>
-                                <option value="13">建筑学院</option>
-                                <option value="14">环境科学与工程学院</option>
+                                <option v-for="college in colleges" :key="college.id" :value="college.name">
+                                    {{ college.name }}
+                                </option>
                             </select>
-                            职位：<select class="form-select tea-edit-position1" id="teaPositionEditSelect"></select>
-                            性别：<select class="form-select" id="teaGenderEditSelect">
+                            职位：<select class="form-select tea-edit-position1" id="teaPositionEditSelect" v-model="form.positionName">
+                                <option value="">请选择职位</option>
+                                <option v-for="pos in positionList" :key="pos.id" :value="pos.name">
+                                    {{ pos.name }}
+                                </option>
+                            </select>
+                            性别：<select class="form-select" id="teaGenderEditSelect" v-model="form.gender">
                                 <option value="">请选择性别</option>
                                 <option value="男">男</option>
                                 <option value="女">女</option>
@@ -486,14 +480,14 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-primary" id="tea-edit-btn">完成</button>
+                            <button type="button" class="btn btn-primary" id="tea-edit-btn" @click="editTeacher">完成</button>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- 添加教师模态框模态框 -->
-            <div class="modal fade" id="teacherModal" tabindex="-1" aria-labelledby="teacherModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="addTeacherModal" tabindex="-1" aria-labelledby="teacherModalLabel"
+                aria-hidden="true"  @keydown.enter="addTeacher">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -501,26 +495,21 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            姓名：<input type="text" class="form-control" id="teaNameInput" placeholder="请输入姓名">
-                            学院：<select class="form-select" id="teaCollegeSelect">
+                            姓名：<input type="text" class="form-control" id="teaNameInput" v-model="form.name" placeholder="请输入姓名">
+                            学院：<select class="form-select" id="teaCollegeSelect" v-model="form.collegeName">
                                 <option value="">请选择院系</option>
-                                <option value="1">人文与传播学院</option>
-                                <option value="2">法学院</option>
-                                <option value="3">英语语言文化学院</option>
-                                <option value="4">日本语言与文化学院</option>
-                                <option value="5">设计与创意学院</option>
-                                <option value="6">音乐与舞蹈学院</option>
-                                <option value="7">国际商务学院</option>
-                                <option value="8">会计与金融学院</option>
-                                <option value="9">管理学院</option>
-                                <option value="10">信息科学与技术学院</option>
-                                <option value="11">机电工程与自动化学院</option>
-                                <option value="12">土木工程学院</option>
-                                <option value="13">建筑学院</option>
-                                <option value="14">环境科学与工程学院</option>
+                                <option v-for="college in colleges" :key="college.id" :value="college.name">
+                                    {{ college.name }}
+                                    
+                                </option>
                             </select>
-                            职位：<select class="form-select" id="teaPositionSelect"></select>
-                            性别：<select class="form-select" id="teaGenderSelect">
+                            职位：<select class="form-select" id="teaPositionSelect" v-model="form.position">
+                                <option value="">请选择职位</option>
+                                <option v-for="pos in positionList" :key="pos.id" :value="pos.name">
+                                    {{ pos.name }}
+                                </option>
+                            </select>
+                            性别：<select class="form-select" id="teaGenderSelect" v-model="form.gender">
                                 <option value="">请选择性别</option>
                                 <option value="男">男</option>
                                 <option value="女">女</option>
@@ -529,13 +518,13 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-primary" id="tea-add-btn">完成</button>
+                            <button type="button" class="btn btn-primary" id="tea-add-btn" @click="addTeacher">完成</button>
                         </div>
                     </div>
                 </div>
             </div>
             <!--教师表单-->
-            <div class="teacher-form">
+            <div class="teacher-form" id="teacherListAPP">
                 <table>
                     <thead>
                         <tr class="teacher-form-title">
@@ -549,15 +538,16 @@
                         </tr>
                     </thead>
                     <tbody class="teacher-list">
-                        <tr class="teacher-form-item">
-                            <td>1</td>
-                            <td>张三</td>
-                            <td>讲师</td>
-                            <td>计算机科学与技术学院</td>
-                            <td>男</td>
+                        <tr class="teacher-form-item" v-for="(teacher, index) in teacherList" :key="teacher.username">
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ teacher.username }}</td>
+                            <td>{{ teacher.name }}</td>
+                            <td>{{ teacher.positionName }}</td>
+                            <td>{{ teacher.collegeName }}</td>
+                            <td>{{ teacher.gender }}</td>
                             <td>
-                                <button type="button" class="btn btn-primary">修改</button>
-                                <button type="button" class="btn btn-danger">删除</button>
+                                <button type="button" class="btn btn-primary" @click="editTeacher(teacher)">修改</button>
+                                <button type="button" class="btn btn-danger" @click="deleteTeacher(teacher)">删除</button>
                             </td>
                         </tr>
                     </tbody>
@@ -729,6 +719,7 @@
 
 
 </body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
 <script src="../js/request.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../js/main_student.js"></script>
@@ -840,3 +831,6 @@
 </script>
 
 </html>
+
+
+

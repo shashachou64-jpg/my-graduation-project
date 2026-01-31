@@ -308,6 +308,16 @@ html {
     color: white;
     text-align: center;
     border-bottom: 1px solid gray;
+    cursor: grab;
+    transition: background-color 0.2s ease;
+}
+
+.teacher-form-item:hover {
+    background-color: #333333;
+}
+
+.teacher-form-item:active {
+    cursor: grabbing;
 }
 
 /*学生渲染列表*/
@@ -336,6 +346,16 @@ html {
     color: white;
     text-align: center;
     border-bottom: 1px solid gray;
+    cursor: grab;
+    transition: background-color 0.2s ease;
+}
+
+.student-form-item:hover {
+    background-color: #333333;
+}
+
+.student-form-item:active {
+    cursor: grabbing;
 }
 
 /* 课程页 */

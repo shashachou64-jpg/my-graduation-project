@@ -1,5 +1,6 @@
 package com.cjy.domain.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,12 +13,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TeacherDTO {
-    private String id;
+    @NotBlank(message = "教师姓名不能为空")
     private String name;
-    private String collegeId;
+    @NotBlank(message = "学院名称不能为空")
     private String collegeName;
+    @NotBlank(message = "职位名称不能为空")
+    private String position;
+    @NotBlank(message = "性别不能为空")
     private String gender;
-    private String positionId;
-    private String positionName;
 }
 

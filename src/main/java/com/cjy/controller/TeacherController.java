@@ -2,7 +2,12 @@ package com.cjy.controller;
 
 import com.cjy.domain.Result;
 import com.cjy.domain.Teacher;
-import com.cjy.service.TeacherService;
+import com.cjy.domain.dto.TeacherDTO;
+import com.cjy.domain.vo.TeacherVO;
+import com.cjy.service.ITeacherService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,29 +19,39 @@ import java.util.List;
 @Validated
 public class TeacherController {
     @Autowired
-    private TeacherService teacherService;
-    // 查询老师列表
+    private ITeacherService iTeacherService;
+
+    /**
+     * 添加老师
+     * @param teacher
+     * @return
+     */
+    @PostMapping("/add")
+    public Result add(@Valid @RequestBody TeacherDTO teacherDTO) {
+        //验证请求对象
+        if (teacherDTO == null) {
+            return Result.error("请求数据不能为空");
+        }
+        //添加老师
+        return iTeacherService.addTeacher(teacherDTO);
+    }
+
     @GetMapping("/list")
-    public Result teacherList() {
-        // 调用service查询老师列表
-        List<Teacher> teacherList=teacherService.findTeacherList();
+    public Result list() {
+        List<TeacherVO> teacherList = iTeacherService.getAllTeacherInfo();
         return Result.success(teacherList);
     }
 
-    @PostMapping("/add")
-    public Result add(@RequestBody Teacher  teacher){
-        return teacherService.addTeacher(teacher);
+    @DeleteMapping("/delete")
+    public Result delete(@RequestParam String username) {
+        if (username == null) {
+            return Result.error("该教师不存在，无法删除");
+        }
+        return iTeacherService.deleteTeacher(username);
     }
 
-    @PostMapping("/delete")
-    public Result delete(@RequestBody Teacher  teacher){
-        return teacherService.deleteTeacher(teacher);
+    @PutMapping("/update")
+    public Result update(@RequestBody TeacherDTO teacherDTO) {
+        return iTeacherService.editTeacherInfo(teacherDTO);
     }
-
-    @PostMapping("/update")
-    public Result update(@RequestBody Teacher  teacher){
-        return teacherService.updateTeacher(teacher);
-    }
-
-
 }

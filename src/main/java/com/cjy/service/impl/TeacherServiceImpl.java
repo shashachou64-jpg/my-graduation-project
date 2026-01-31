@@ -1,106 +1,217 @@
 package com.cjy.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjy.domain.College;
+import com.cjy.domain.Personal;
+import com.cjy.domain.Position;
 import com.cjy.domain.Result;
 import com.cjy.domain.Teacher;
+import com.cjy.domain.User;
+import com.cjy.domain.UserWithIdentity;
+import com.cjy.domain.dto.TeacherDTO;
+import com.cjy.domain.vo.TeacherVO;
+import com.cjy.mapper.CollegeMapper;
+import com.cjy.mapper.PersonalMapper;
+import com.cjy.mapper.PositionMapper;
 import com.cjy.mapper.TeacherMapper;
-import com.cjy.service.TeacherService;
+import com.cjy.mapper.UserMapper;
+import com.cjy.mapper.UserWithIdentityMapper;
+import com.cjy.service.ITeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
-public class TeacherServiceImpl implements TeacherService {
+public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> implements ITeacherService {
     @Autowired
     private TeacherMapper teacherMapper;
 
+    @Autowired
+    private CollegeMapper collegeMapper;
+
+    @Autowired
+    private PositionMapper positionMapper;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private PersonalMapper personalMapper;
+
+    @Autowired
+    private UserWithIdentityMapper userWithIdentityMapper;
+
+
+
     @Override
-    public Result addTeacher(Teacher teacher) {
-        /*
-         * 1.判断返回的信息是否有空
-         * 2.空了返回错误信息
-         * 3.没有空，添加老师
-         * */
-        //判断返回的信息是否有空
-        if (teacher.getCollegeId() == null || teacher.getPositionId() == null || teacher.getName() == null) {
-            return Result.error("信息不能为空");
+    public Result addTeacher(TeacherDTO teacherDTO) {
+        /**
+         * 学院名称是否存在于数据库中
+         * 如果有，则获取学院ID
+         * 如果没有返回错误
+         */
+        College college = collegeMapper
+                .selectOne(new LambdaQueryWrapper<College>()
+                        .eq(College::getName, teacherDTO.getCollegeName()));
+        if (college == null) {
+            return Result.error("该学院不存在");
         }
-        if (teacher.getName().isEmpty()) {
-            return Result.error("姓名不能为空");
+        Long collegeId = college.getId();
+
+        /**
+         * 职位名称是否存在于数据库中
+         * 如果有，则获取职位ID
+         * 如果没有返回错误
+         */
+        Position position = positionMapper.selectOne(
+                new LambdaQueryWrapper<Position>()
+                        .eq(Position::getName, teacherDTO.getPosition()));
+
+        if (position == null) {
+            return Result.error("该职位不存在");
         }
-        if (teacher.getCollegeId().isEmpty()) {
-            return Result.error("学院不能为空");
+        Long positionId = position.getId();
+
+        /**
+         * 添加老师
+         * 添加教师表
+         * 添加用户表
+         * 添加个人信息表
+         * 添加用户身份表
+         */
+        Teacher teacher = new Teacher();
+        teacher.setName(teacherDTO.getName());
+        teacher.setCollegeId(collegeId);
+        teacher.setPositionId(positionId);
+        teacher.setGender(teacherDTO.getGender());
+        int insertTeacher = teacherMapper.insert(teacher);
+        if (insertTeacher == 0) {
+            return Result.error("添加教师失败");
         }
-        if (teacher.getPositionId().isEmpty()) {
-            return Result.error("职位不能为空");
+
+        /**
+         * 添加用户表
+         * 用户名：学校代码：13469+学院代码：2位+教师编码：4位
+         */
+        // 学院编码：学院id，如果1位的话自动补0
+        String collegeCode = String.format("%02d", collegeId);
+        // 教师编码：教师id，如果1位的话自动补0
+        String teacherCode = String.format("%04d", teacher.getId());
+        User user = new User();
+        user.setUsername("13469" + collegeCode + teacherCode);
+        user.setPassword("123456");
+        int insertUser = userMapper.insert(user);
+        if (insertUser == 0) {
+            return Result.error("添加用户失败");
         }
-        //判断性别是否为空
-        if (teacher.getGender().isEmpty()) {
-            return Result.error("性别不能为空");
+
+        /**
+         * 添加个人信息表
+         */
+        Personal personal = new Personal();
+        personal.setUserId(user.getId());
+        personal.setName(teacherDTO.getName());
+        personal.setSex(teacherDTO.getGender());
+        int insertPersonal = personalMapper.insert(personal);
+        if (insertPersonal == 0) {
+            return Result.error("添加个人信息失败");
         }
-        //添加老师
-        int rows = teacherMapper.addTeacher(teacher);
-        if (rows == 0) {
-            return Result.error("添加失败，请稍后重试");
-        } else {
-            return Result.success("添加成功");
+
+        /**
+         * 添加用户身份表
+         */
+        UserWithIdentity userWithIdentity = new UserWithIdentity();
+        userWithIdentity.setUserId(user.getId());
+        userWithIdentity.setIdentityId(2L);
+        int insertUserWithIdentity = userWithIdentityMapper.insert(userWithIdentity);
+        if (insertUserWithIdentity == 0) {
+            return Result.error("添加用户身份失败");
         }
+        return Result.success("添加教师成功");
 
     }
 
-    @Transactional
     @Override
-    public List<Teacher> findTeacherList() {
-        return teacherMapper.findAllTeacherList();
+    public List<TeacherVO> getAllTeacherInfo() {
+        // 1. 查询所有教师
+        List<Teacher> teacherList = teacherMapper.selectList(null);
+
+        // 2. 查询所有学院
+        Map<Long, String> collegeMap = collegeMapper.selectList(null).stream()
+                .collect(Collectors.toMap(College::getId, College::getName));
+
+        // 3. 查询所有职位、
+        Map<Long, String> positionMap = positionMapper.selectList(null).stream()
+                .collect(Collectors.toMap(Position::getId, Position::getName));
+
+        return teacherList.stream()
+                .map(teacher -> {
+                    TeacherVO vo = new TeacherVO();
+                    vo.setUsername(Long
+                            .parseLong(
+                                    "13469" +
+                                            String.format("%02d", teacher.getCollegeId()) +
+                                            String.format("%04d", teacher.getId()))); // 工号
+                    vo.setName(teacher.getName()); // 姓名
+                    vo.setGender(teacher.getGender()); // 性别
+                    vo.setCollegeName(collegeMap.get(teacher.getCollegeId())); // 学院名称
+                    vo.setPositionName(positionMap.get(teacher.getPositionId())); // 职位名称
+                    return vo;
+                })
+                .collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
-    public Result deleteTeacher(Teacher teacher) {
-        //判断返回的信息是否有空
-        if (teacher.getId() == null) {
-            return Result.error("信息不能为空");
+    public Result deleteTeacher(String username) {
+        //获得教师id
+        String teacherId = username.substring(8);
+        //如果前面是0则去除0
+        String result = teacherId.replaceAll("^0+", "");
+        Long teacherIdLong = Long.parseLong(result);
+        //如果不在数据库中则返回失败
+        Teacher teacher = teacherMapper.selectOne(new LambdaQueryWrapper<Teacher>().eq(Teacher::getId, teacherIdLong));
+        if (teacher == null) {
+            return Result.error("该教师不存在，无法删除");
         }
-        if (teacher.getId().isEmpty()) {
-            return Result.error("id不能为空");
-        }
-        //删除老师
-        int rows = teacherMapper.deleteTeacher(teacher);
-        if (rows == 0) {
-            return Result.error("删除失败，请稍后重试");
-        } else {
-            return Result.success("删除成功");
-        }
+        //删除教师表
+        this.remove(
+            new LambdaQueryWrapper<Teacher>()
+            .eq(Teacher::getId, teacherIdLong)
+        );
+        //删除用户表
+        Long userId=userMapper.selectOne(
+            new LambdaQueryWrapper<User>()
+            .eq(User::getUsername, username))
+            .getId();
+        
+        userMapper.delete(
+            new LambdaQueryWrapper<User>()
+            .eq(User::getId, userId)
+        );  
+        
+        //删除个人信息表
+        personalMapper.delete(
+            new LambdaQueryWrapper<Personal>()
+            .eq(Personal::getUserId, userId)
+        );
+        //删除用户身份表
+        userWithIdentityMapper.delete(
+            new LambdaQueryWrapper<UserWithIdentity>()
+            .eq(UserWithIdentity::getUserId, userId)
+        );
+        return Result.success("删除成功");
+        
     }
 
     @Override
-    public Result updateTeacher(Teacher teacher) {
-        //判断返回的信息是否有空
-        if (teacher.getId() == null) {
-            return Result.error("信息不能为空");
-        }
-        if (teacher.getId().isEmpty()) {
-            return Result.error("id不能为空");
-        }
-        if (teacher.getName().isEmpty()) {
-            return Result.error("姓名不能为空");
-        }
-        if (teacher.getCollegeId().isEmpty()) {
-            return Result.error("学院不能为空");
-        }
-        if (teacher.getPositionId().isEmpty()) {
-            return Result.error("职位不能为空");
-        }
-        if (teacher.getGender().isEmpty()) {
-            return Result.error("性别不能为空");
-        }
-        //更新老师
-        int rows = teacherMapper.updateTeacher(teacher);
-        if (rows == 0) {
-            return Result.error("修改失败，请稍后重试");
-        } else {
-            return Result.success("修改成功");
-        }
+    public Result editTeacherInfo(TeacherDTO teacherDTO) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'editTeacherInfo'");
     }
 }

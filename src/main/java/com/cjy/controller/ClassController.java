@@ -39,5 +39,8 @@ public class ClassController {
         List<Class> classList = iClassService.list(queryWrapper);
         return Result.success(classList);
     }
+
+
+    
     
 }

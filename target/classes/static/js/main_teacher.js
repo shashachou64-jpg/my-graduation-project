@@ -1,174 +1,240 @@
-//渲染教师职位
-const teaPositionSelect = document.getElementById('teaPositionSelect')
-teaPositionSelect.innerHTML = '<option value="">请选择职位</option>'
-axios({
-    url: '/position/list',
-}).then(result => {
-    const positions = result.data.data
-    positions.forEach(major => {
-        const option = document.createElement('option');
-        option.value = major.id
-        option.textContent = major.name
-        teaPositionSelect.appendChild(option)
-    });
-})
-
-//添加教师按钮点击事件
-const teacherModal = document.getElementById('teacherModal');
-teacherModal.addEventListener('shown.bs.modal', function () {
-    // 可选：自动聚焦到姓名输入框，提升体验
-    document.getElementById('teaNameInput').focus();
-
-    // 绑定 Enter 键提交（只在模态框打开时有效）
-    teacherModal.addEventListener('keydown', teacherAddHandleEnterKey);
-});
-
-// 可选：模态框关闭后移除事件监听（防止内存泄漏或重复绑定）
-teacherModal.addEventListener('hidden.bs.modal', function () {
-    teacherModal.removeEventListener('keydown', teacherAddHandleEnterKey);
-});
-
-// 统一的 Enter 键处理函数
-function teacherAddHandleEnterKey(e) {
-    // 避免在 textarea 或 shift+enter 等情况下触发
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();  // 阻止默认行为（如表单提交）
-
-        // 触发添加按钮的点击事件
-        document.getElementById('tea-add-btn').click();
-    }
-}
-
-const addTeacherBtn = document.getElementById('tea-add-btn')
-addTeacherBtn.addEventListener('click', () => {
-    const name = document.getElementById('teaNameInput').value.trim()
-    const collegeId = document.getElementById('teaCollegeSelect').value
-    const positionId = document.getElementById('teaPositionSelect').value
-    const gender = document.getElementById('teaGenderSelect').value
-    //自动聚焦到姓名框
-    document.getElementById('teaNameInput').focus()
-    axios({
-        url: '/teacher/add',
-        method: 'post',
-        data: {
-            name,
-            collegeId,
-            positionId,
-            gender
-        }
-    }).then(result => {
-        if (result.data.code === 0) {
-            //关闭模态框
-            document.querySelector('#teacherModal .btn-secondary').click();
-            //刷新学生列表
-            renderTeacherList()
-        } else {
-            alert('添加教师失败：' + result.data.message)
-        }
-    })
-})
-
-//教师删除按钮点击事件
-document.querySelector('.teacher-list').addEventListener('click', e => {
-    if (e.target.classList.contains('tea-list-delete-btn')) {
-        const teaId = e.target.parentNode.dataset.id
-        console.log(teaId)
-        axios({
-            url: '/teacher/delete',
-            method: 'post',
-            data: {
-                id: teaId
+//===============================
+//添加单个教师
+//===============================
+const addTeacherAPP = new Vue({
+    el: '#addTeacherModal',
+    data: {
+        form: {
+            name: '',
+            collegeName: '',
+            position: '',
+            gender: ''
+        },
+        colleges: [],
+        positionList: [],
+        genders: [
+            { value: '男', label: '男' },
+            { value: '女', label: '女' }
+        ]
+    },
+    methods: {
+        async loadColleges() {
+            if (this.colleges.length > 0) return
+            try {
+                const response = await axios({
+                    url: '/college/list',
+                    method: 'get',
+                })
+                this.colleges = response.data.data
+            } catch (error) {
+                console.error('获取学院列表失败', error)
+                return []
             }
-        }).then(result => {
-            if (result.data.code === 0) {
-                //刷新学生列表
-                renderTeacherList()
+        },
+        async loadPositions() {
+            if (this.positionList.length > 0) return
+
+            try {
+                const response = await axios({
+                    url: '/position/list',
+                    method: 'get',
+                })
+                this.positionList = response.data.data
+            } catch (error) {
+                console.error('获取职位列表失败', error)
+                return []
+            }
+        },
+        async addTeacher() {
+            try {
+                // 表单验证
+                if (!this.form.name) {
+                    showAlert('请输入教师姓名！');
+                    return;
+                }
+                if (!this.form.collegeName) {
+                    showAlert('请选择学院！');
+                    return;
+                }
+                if (!this.form.position) {
+                    showAlert('请选择职位！');
+                    return;
+                }
+                if (!this.form.gender) {
+                    showAlert('请选择性别！');
+                    return;
+                }
+
+                // 发送添加请求
+                const response = await axios({
+                    url: '/teacher/add',
+                    method: 'post',
+                    data: this.form
+                })
+
+                if (response.data.code === 0) {
+                    showSuccessAlert('添加教师成功！');
+                    // 关闭模态框
+                    const modalEl = document.getElementById('addTeacherModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    teacherListAPP.loadTeacherList()
+                    if (modal) {
+                        modal.hide();
+                    }
+                    // 重置表单
+                    this.form = {
+                        name: '',
+                        collegeName: '',
+                        position: '',
+                        gender: ''
+                    }
+
+                } else {
+                    showAlert(response.data.message || '添加教师失败！');
+                }
+            } catch (error) {
+                console.error('添加教师失败', error);
+                showAlert(error.response?.data?.message || '添加教师失败，请稍后重试！');
+            }
+        }
+    },
+    mounted() {
+        document.getElementById('addTeacherModal').addEventListener('shown.bs.modal', () => {
+            this.loadColleges()
+            this.loadPositions()
+        })
+    }
+})
+
+
+
+//===============================
+//教师列表
+//===============================
+const teacherListAPP = new Vue({
+    el: '#teacherListAPP',
+    data: {
+        teacherList: []
+    },
+    methods: {
+        async loadTeacherList() {
+            try {
+                const response = await axios({
+                    url: '/teacher/list',
+                    method: 'get',
+                })
+                if (response.data.code === 0) {
+                    this.teacherList = response.data.data
+                } else {
+                    showAlert(response.data.message || '获取教师列表失败！');
+                }
+            } catch (error) {
+
+            }
+        },
+        async editTeacher(teacher) {
+            //弹出修改教师模态框
+            if (editTeacherAPP) {
+                editTeacherAPP.openEditModal(teacher)
             } else {
-                alert('删除教师失败：' + result.data.message)
+                console.error('editTeacherApp 未初始化')
             }
-        })
+        },
+        async deleteTeacher(username) {
+            try {
+                const response = await axios({
+                    url: '/teacher/delete',
+                    method: 'delete',
+                    params: {
+                        username: username
+                    }
+                })
+                if (response.data.code === 0) {
+                    showSuccessAlert('删除教师成功！');
+                    this.loadTeacherList()
+                } else {
+                    showAlert(response.data.message || '删除教师失败！');
+                }
+            } catch (error) {
+                console.error('删除教师失败', error);
+                showAlert('删除教师失败，请稍后重试！');
+            }
+        }
+    },
+    mounted() {
+        this.loadTeacherList()
     }
 
+})
+//===============================
+//修改教师模态框
+//===============================
+const editTeacherAPP = new Vue({
+    el: '#teacherEditModal',
+    data: {
+        form: {
+            username: '',
+            name: '',
+            collegeName: '',
+            positionName: '',
+            gender: ''
+        },
+        colleges: [],
+        positionList: [],
 
-    const EditTraModalDom = document.getElementById('teacherEditModal')
-    EditTraModalDom.addEventListener('shown.bs.modal', function () {
-        // 正确！聚焦到学生的学号或姓名输入框
-        document.getElementById('teaNameEditInput').focus();
+    },
+    methods: {
+        async openEditModal(teacher) {
+            /**
+             * 获取学院列表
+             * 获取职位列表
+             * 填充模态框数据
+             * 显示模态框
+             */
+            const response = await axios({
+                url: '/college/list',
+                method: 'get',
+            })
+            const colleges = response.data.data
+            const response2 = await axios({
+                url: '/position/list',
+                method: 'get',
+            })
+            const positionList = response2.data.data
+            this.form = {
+                username: teacher.username,
+                name: teacher.name,
+                collegeName: teacher.collegeName,
+                positionName: teacher.positionName,
+                gender: teacher.gender
+            }
+            this.colleges = colleges
+            this.positionList = positionList
+            const modal = new bootstrap.Modal(document.getElementById('teacherEditModal'))
+            modal.show()
+        },
+        async editTeacher() {
+            try {
+                const college = this.colleges.find(c => c.name === this.form.collegeName);
+                const position = this.positionList.find(p => p.name === this.form.positionName);
 
-        // 绑定 Enter 键提交（只在模态框打开时有效）
-        EditTraModalDom.addEventListener('keydown', teacherEditHandleEnterKey)
-    })
-    EditTraModalDom.addEventListener('hidden.bs.modal', function () {
-        EditTraModalDom.removeEventListener('keydown', teacherEditHandleEnterKey)
-    })
-    function teacherEditHandleEnterKey(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault()
-            document.getElementById('tea-edit-btn').click()
+                const teacherDTO = {
+                    username: this.form.username,
+                    name: this.form.name,
+                    collegeId: college ? college.id : null,
+                    positionId: position ? position.id : null,
+                    gender: this.form.gender
+                }
+                const response=await axios({
+                    url: '/teacher/update',
+                    method: 'put',
+                    data: teacherDTO
+                })
+            } catch (error) {
+                console.error('修改教师失败', error);
+                showAlert('修改教师失败，请稍后重试！');
+            }
         }
     }
-    if (e.target.classList.contains('tea-list-edit-btn')) {
-        console.log('编辑按钮被点击了')
-        //显示模态框
-        const modalDom = document.getElementById('teacherEditModal')
-        const modal = new bootstrap.Modal(modalDom)
-        modal.show()
-
-        // 获取数据
-        const teaId = e.target.parentNode.dataset.id
-        const teaName = e.target.parentNode.dataset.name
-        const teaCollegeName = e.target.parentNode.dataset.collegeId
-        const teaPositionName = e.target.parentNode.dataset.positionId
-        const teaGender = e.target.parentNode.dataset.gender
-        //填充数据到模态框输入框
-        document.getElementById('teaNumberEditInput').value = teaId
-        document.getElementById('teaNameEditInput').value = teaName
-        document.querySelector('.tea-edit-college1').value = teaCollegeName
-        document.querySelector('.tea-edit-position1').value = teaPositionName
-        document.getElementById('teaGenderEditSelect').value = teaGender
-
-        const teaPositionSelect = document.getElementById('teaPositionEditSelect')
-        teaPositionSelect.innerHTML = '<option value="">请选择职位</option>'
-        axios({
-            url: '/position/list',
-        }).then(result => {
-            const positions = result.data.data
-            positions.forEach(major => {
-                const option = document.createElement('option');
-                option.value = major.id
-                option.textContent = major.name
-                teaPositionSelect.appendChild(option)
-            });
-        })
-
-        document.getElementById('tea-edit-btn').addEventListener('click', () => {
-            const id = document.getElementById('teaNumberEditInput').value
-            const teaName = document.getElementById('teaNameEditInput').value
-            const teaCollegeId = document.querySelector('.tea-edit-college1').value
-            const teaPositionId = document.querySelector('.tea-edit-position1').value
-            const teaGender = document.getElementById('teaGenderEditSelect').value
-            
-            axios({
-                url:'/teacher/update',
-                method:'post',
-                data: {
-                    id: id,
-                    name: teaName,
-                    collegeId: teaCollegeId,
-                    positionId: teaPositionId,
-                    gender: teaGender
-                }
-            }).then(result=>{
-                if(result.data.code === 0){
-                    //关闭模态框
-                    document.querySelector('#teacherEditModal .btn-secondary').click();
-                    //刷新学生列表
-                    renderTeacherList()
-                }else{
-                    alert('更新教师信息失败：'+result.data.message)
-                }
-            })
-            
-        })
-    }
 })
+//===============================
