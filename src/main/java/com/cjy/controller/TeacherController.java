@@ -2,6 +2,7 @@ package com.cjy.controller;
 
 import com.cjy.domain.Result;
 import com.cjy.domain.Teacher;
+import com.cjy.domain.dto.EditTeacherDTO;
 import com.cjy.domain.dto.TeacherDTO;
 import com.cjy.domain.vo.TeacherVO;
 import com.cjy.service.ITeacherService;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,16 +25,17 @@ public class TeacherController {
 
     /**
      * 添加老师
+     * 
      * @param teacher
      * @return
      */
     @PostMapping("/add")
     public Result add(@Valid @RequestBody TeacherDTO teacherDTO) {
-        //验证请求对象
+        // 验证请求对象
         if (teacherDTO == null) {
             return Result.error("请求数据不能为空");
         }
-        //添加老师
+        // 添加老师
         return iTeacherService.addTeacher(teacherDTO);
     }
 
@@ -51,7 +54,20 @@ public class TeacherController {
     }
 
     @PutMapping("/update")
-    public Result update(@RequestBody TeacherDTO teacherDTO) {
-        return iTeacherService.editTeacherInfo(teacherDTO);
+    public Result update(@Valid @RequestBody EditTeacherDTO editTeacherDTO) {
+        return iTeacherService.editTeacherInfo(editTeacherDTO);
+    }
+
+    @PostMapping("/batchAddTeaInfo")
+    public Result batchAddTeaInfo(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return Result.error("请选择文件");
+        }
+        try {
+            Result result = iTeacherService.batchAddTeaInfo(file);
+            return result;
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
     }
 }

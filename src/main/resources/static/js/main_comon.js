@@ -66,7 +66,7 @@ function showAlert(message) {
     const alertEl = document.getElementById('alert-DangerB');
     if (!alertEl) return;
 
-    alertEl.textContent = message;
+    alertEl.innerHTML = message;  // 使用 innerHTML 解析 HTML 标签
 
     // 1. 先设为 block，此时 opacity 仍为 0
     alertEl.style.display = 'block';

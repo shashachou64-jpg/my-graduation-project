@@ -10,8 +10,8 @@ spring:
       enabled: true
       additional-paths: src/main/java,src/main/resources
       exclude: static/**,public/**
-      poll-interval: 2000ms      # 每2秒检查一次变化
-      quiet-period: 1000ms      # 等待1秒后再重启
+      poll-interval: 10s      # 每10秒检查一次变化
+      quiet-period: 3s        # 等待3秒后再重启
 # MyBatis-Plus配置
 mybatis-plus:
   configuration:

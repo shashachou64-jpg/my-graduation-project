@@ -107,14 +107,14 @@ const addTeacherAPP = new Vue({
 })
 
 
-
 //===============================
 //教师列表
 //===============================
 const teacherListAPP = new Vue({
     el: '#teacherListAPP',
     data: {
-        teacherList: []
+        teacherList: [],
+        fullTeacherList: [] // 保存完整的教师列表
     },
     methods: {
         async loadTeacherList() {
@@ -125,12 +125,41 @@ const teacherListAPP = new Vue({
                 })
                 if (response.data.code === 0) {
                     this.teacherList = response.data.data
+                    this.fullTeacherList = response.data.data // 保存完整列表
                 } else {
                     showAlert(response.data.message || '获取教师列表失败！');
                 }
             } catch (error) {
-
+                console.error('获取教师列表失败', error);
+                showAlert('获取教师列表失败！请重试！');
             }
+        },
+        // 过滤教师列表
+        filterTeachers(searchType, searchValue) {
+            this.teacherList = this.fullTeacherList.filter(teacher => {
+                let fieldValue
+                switch (searchType) {
+                    case 'number':
+                        fieldValue = teacher.username
+                        break
+                    case 'name':
+                        fieldValue = teacher.name
+                        break
+                    case 'position':
+                        fieldValue = teacher.positionName
+                        break
+                    case 'college':
+                        fieldValue = teacher.collegeName
+                        break
+                    default:
+                        fieldValue = teacher.username
+                }
+                return fieldValue && fieldValue.toString().toLowerCase().includes(searchValue)
+            })
+        },
+        // 显示全部教师
+        showAllTeachers() {
+            this.teacherList = [...this.fullTeacherList]
         },
         async editTeacher(teacher) {
             //弹出修改教师模态框
@@ -153,6 +182,7 @@ const teacherListAPP = new Vue({
                     showSuccessAlert('删除教师成功！');
                     this.loadTeacherList()
                 } else {
+                    console.log(response.data);
                     showAlert(response.data.message || '删除教师失败！');
                 }
             } catch (error) {
@@ -166,6 +196,7 @@ const teacherListAPP = new Vue({
     }
 
 })
+
 //===============================
 //修改教师模态框
 //===============================
@@ -218,23 +249,132 @@ const editTeacherAPP = new Vue({
                 const college = this.colleges.find(c => c.name === this.form.collegeName);
                 const position = this.positionList.find(p => p.name === this.form.positionName);
 
-                const teacherDTO = {
+                const editTeacherDTO = {
                     username: this.form.username,
                     name: this.form.name,
                     collegeId: college ? college.id : null,
                     positionId: position ? position.id : null,
                     gender: this.form.gender
                 }
-                const response=await axios({
+                const response = await axios({
                     url: '/teacher/update',
                     method: 'put',
-                    data: teacherDTO
+                    data: editTeacherDTO
                 })
+                console.log(response)
+                if (response.data.code === 0) {
+                    showSuccessAlert('修改教师成功！')
+                    //关闭模态框
+                    const modalEl = document.getElementById('teacherEditModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    teacherListAPP.loadTeacherList()
+                    if (modal) {
+                        modal.hide()
+                    }
+                } else {
+                    showAlert('修改教师失败！请重试！')
+                }
             } catch (error) {
-                console.error('修改教师失败', error);
-                showAlert('修改教师失败，请稍后重试！');
+                console.error('修改教师失败', error)
+                showAlert('修改教师失败！请重试！')
             }
         }
     }
 })
+
 //===============================
+//批量导入教师
+//===============================
+const teacherImportAPP = new Vue({
+    el: '#teacherImportAPP',
+    data: {
+        selectedFile: null,
+        importing: false
+    },
+    methods: {
+        triggerImport() {
+            document.getElementById('teacherFileInput').click();
+        },
+        handleTeacherFileChange(e) {
+            const file = e.target.files[0]
+            if (!file) { return }
+            const filename = file.name.toLowerCase()
+            if (!filename.endsWith('.xlsx') && !filename.endsWith('.xls')) {
+                showAlert('请选择 Excel 文件（.xlsx 或 .xls）！');
+                this.selectedFile = null;
+                return;
+            }
+
+            this.selectedFile = file
+
+            this.handleImport()
+        },
+        async handleImport() {
+            if (!this.selectedFile) {
+                showAlert('请选择文件！')
+                return
+            }
+
+            this.importing = true
+            try {
+                const formData = new FormData()
+                formData.append('file', this.selectedFile)
+                const response = await axios({
+                    url: '/teacher/batchAddTeaInfo',
+                    method: 'post',
+                    data: formData,
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                if (response.data.code === 0) {
+                    showSuccessAlert('导入成功！')
+                    //更新教师列表
+                    teacherListAPP.loadTeacherList()
+                } else {
+                    const message = response.data.message || '导入失败！'
+                    // 换行符转 <br> 用于显示
+                    showAlert(message.replace(/\n/g, '<br>'))
+                }
+            } catch (error) {
+                showAlert('导入失败！请重试！');
+            }
+            finally {
+                document.getElementById('teacherFileInput').value = '';
+                this.selectedFile = null;
+                this.importing = false;
+            }
+        }
+    }
+})
+
+//===============================
+//教师搜索功能
+//===============================
+const teacherSearchAPP = new Vue({
+    el: '#teacherSearchAPP',
+    data: {
+        searchType: 'number',
+        searchValue: ''
+    },
+    methods: {
+        searchTeacher() {
+            const searchValue = this.searchValue.trim().toLowerCase()
+            const searchType = this.searchType
+
+            if (!searchValue) {
+                // 如果搜索值为空，显示全部教师
+                teacherListAPP.showAllTeachers()
+                return
+            }
+
+            // 过滤教师列表
+            teacherListAPP.filterTeachers(searchType, searchValue)
+        },
+        resetSearch() {
+            this.searchType = 'number'
+            this.searchValue = ''
+            teacherListAPP.showAllTeachers()
+        }
+    }
+})

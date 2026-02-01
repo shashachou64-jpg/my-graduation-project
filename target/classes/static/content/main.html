@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager</title>
+    <title>分组系统管理端</title>
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/main.css">
@@ -70,40 +70,175 @@
             </div>
             <!-- 第一页总学生 -->
             <div id="dash-student" class="dash-sub-page dash-visible">
-                <div class="dash-item-page">
-                    <div class="student-total-page-left">
-                        <!-- 学生总数卡片 -->
-                        <div class="student-total">
-                            <div class="student-total-text">
-                                总学生数：1500
+                <div class="student-stats-container">
+
+                    <!-- 第一行：总人数卡片 + 性别比例 -->
+                    <div class="stats-row row-1">
+                        <!-- 总人数卡片 -->
+                        <div class="total-card-wrapper">
+                            <div class="total-card student-total-card">
+                                <div class="total-icon">
+                                    <i class="iconfont icon-team"></i>
+                                </div>
+                                <div class="total-content">
+                                    <div class="total-label">总学生人数</div>
+                                    <div class="total-value" id="totalStudentsCount">3,256</div>
+                                </div>
+                                <div class="total-divider"></div>
+                                <div class="total-stats">
+                                    <div class="total-stat">
+                                        <span class="stat-num" style="color: #3498db;">1,850</span>
+                                        <span class="stat-txt">男生</span>
+                                    </div>
+                                    <div class="total-stat">
+                                        <span class="stat-num" style="color: #e74c3c;">1,406</span>
+                                        <span class="stat-txt">女生</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <!-- 男女比例饼状图 -->
-                        <div class="boyAndGirlPie">
-                            <canvas id="myPieChart"></canvas>
+
+                        <!-- 性别比例饼图 -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <i class="iconfont icon-chart"></i>
+                                <span>性别比例</span>
+                            </div>
+                            <div class="chart-body pie-chart-body">
+                                <canvas id="studentGenderChart"></canvas>
+                            </div>
+                            <div class="pie-legend">
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #3498db;"></span>
+                                    <span>男生 1,850人</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #e74c3c;"></span>
+                                    <span>女生 1,406人</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="student-total-page-right">
-                        <!-- 学院统计折现图 -->
-                        <canvas id="collageLineChart" width="100" height="100"></canvas>
+                    <!-- 第二行：学院分布折线图 -->
+                    <div class="stats-row row-2">
+                        <div class="chart-card chart-full">
+                            <div class="chart-header">
+                                <i class="iconfont icon-chart-line"></i>
+                                <span>各学院学生分布</span>
+                            </div>
+                            <div class="chart-body">
+                                <canvas id="studentCollegeLineChart"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
             </div>
 
-            <div class="dash-sub-page">
-                <!-- 第二页总课程 -->
-                <div class="page dash-item-page">
-                    asdkjf
+            <div class="dash-sub-page" id="dash-teacher">
+                <!-- 教师统计页面 -->
+                <div class="page dash-item-page teacher-stats-page dash-visible">
+                    <div class="teacher-stats-container">
+                        <!-- 第一行：总人数卡片 + 性别比例 -->
+                        <div class="stats-row row-1">
+                            <!-- 总人数卡片 -->
+                            <div class="total-card-wrapper">
+                                <div class="total-card">
+                                    <div class="total-icon">
+                                        <i class="iconfont icon-team"></i>
+                                    </div>
+                                    <div class="total-content">
+                                        <div class="total-label">总教师人数</div>
+                                        <div class="total-value" id="totalTeachersCount">1,256</div>
+                                    </div>
+                                    <div class="total-divider"></div>
+                                    <div class="total-stats">
+                                        <div class="total-stat">
+                                            <span class="stat-num" style="color: #667eea;">580</span>
+                                            <span class="stat-txt">男教师</span>
+                                        </div>
+                                        <div class="total-stat">
+                                            <span class="stat-num" style="color: #e74c3c;">676</span>
+                                            <span class="stat-txt">女教师</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 性别比例环形图 -->
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <i class="iconfont icon-chart"></i>
+                                    <span>性别比例</span>
+                                </div>
+                                <div class="chart-body pie-chart-body">
+                                    <canvas id="teacherGenderChart"></canvas>
+                                </div>
+                                <div class="pie-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-dot" style="background: #667eea;"></span>
+                                        <span>男教师 580人</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-dot" style="background: #e74c3c;"></span>
+                                        <span>女教师 676人</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第二行：学院教师分布折线图 -->
+                        <div class="stats-row row-2">
+                            <div class="chart-card chart-full">
+                                <div class="chart-header">
+                                    <i class="iconfont icon-chart-line"></i>
+                                    <span>各学院教师分布</span>
+                                </div>
+                                <div class="chart-body">
+                                    <canvas id="teacherCollegeLineChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="dash-sub-page">
-                <!-- 第三页总教师 -->
-                <div class="page dash-item-page">
-                    asdkjfdsafasdf
+
+            <!-- 总课程统计页面 -->
+            <div class="dash-sub-page" id="dash-course">
+                <div class="page dash-item-page course-stats-page dash-visible">
+                    <div class="course-stats-container">
+
+                        <!-- 第一行：总课程卡片（占满整行） -->
+                        <div class="stats-row row-1">
+                            <div class="total-card-wrapper">
+                                <div class="total-card course-total-card chart-full">
+                                    <div class="total-icon">
+                                        <i class="iconfont icon-book"></i>
+                                    </div>
+                                    <div class="total-content">
+                                        <div class="total-label">总课程数</div>
+                                        <div class="total-value" id="totalCoursesCount">856</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第二行：学院课程分布折线图 -->
+                        <div class="stats-row row-2">
+                            <div class="chart-card chart-full">
+                                <div class="chart-header">
+                                    <i class="iconfont icon-chart-line"></i>
+                                    <span>各学院课程分布</span>
+                                </div>
+                                <div class="chart-body">
+                                    <canvas id="courseCollegeLineChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </div>
         <!-- 学生管理 -->
         <div id="studentManger" class="page main-page">
@@ -424,8 +559,14 @@
         <!-- 教师管理 -->
         <div id="teacherManger" class="page main-page">
             <div class="teacher-edit-box">
-                <!-- 导入按钮（左侧） -->
-                <button type="button" class="btn btn-primary teacher-import-btn" id="teacherImportBtn">导入</button>
+                <div id="teacherImportAPP">
+                    <!-- 导入按钮（左侧） -->
+                    <button type="button" class="btn btn-success" id="teacherImportBtn"
+                        @click="triggerImport">导入教师</button>
+                    <input type="file" id="teacherFileInput" @change="handleTeacherFileChange" accept=".xlsx,.xls"
+                        style="display:none">
+                </div>
+
                 <!-- 添加按钮（右侧） -->
                 <button type="button" class="btn btn-primary teacher-edit-btn" data-bs-toggle="modal"
                     data-bs-target="#addTeacherModal">
@@ -433,18 +574,21 @@
                 </button>
             </div>
             <!-- 教师搜索区域（布局与课程管理一致） -->
-            <div class="class-search-box teacher-search-box">
-                <select class="form-select class-search-select teacher-search-select" id="teacherSearchSelect">
+            <div class="class-search-box teacher-search-box" id="teacherSearchAPP">
+                <select class="form-select class-search-select teacher-search-select" id="teacherSearchSelect"
+                    v-model="searchType">
                     <option value="number">工号</option>
                     <option value="name">姓名</option>
                     <option value="position">职位</option>
+                    <option value="college">学院</option>
                 </select>
                 <input type="text" class="form-control class-search-input teacher-search-input" id="teacherSearchInput"
-                    placeholder="请输入教师相关信息进行搜索">
-                <button type="button" class="btn btn-primary class-search-btn teacher-search-btn"
-                    id="teacherSearchBtn">搜索</button>
-                <button type="button" class="btn btn-primary class-reset-btn teacher-reset-btn"
-                    id="teacherResetBtn">重置</button>
+                    placeholder="请输入教师相关信息进行搜索" v-model="searchValue" @input="searchTeacher"
+                    @keyup.enter="searchTeacher">
+                <button type="button" class="btn btn-primary class-search-btn teacher-search-btn" id="teacherSearchBtn"
+                    @click="searchTeacher">搜索</button>
+                <button type="button" class="btn btn-primary class-reset-btn teacher-reset-btn" id="teacherResetBtn"
+                    @click="resetSearch">重置</button>
             </div>
             <!-- 修改教师模态框 -->
             <div class="modal fade" id="teacherEditModal" tabindex="-1" aria-labelledby="reacherEditModalLabel"
@@ -456,16 +600,19 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            工号：<input type="text" class="form-control" id="teaNumberEditInput" placeholder="请输入工号" v-model="form.username"
-                                readonly>
-                            姓名：<input type="text" class="form-control" id="teaNameEditInput" placeholder="请输入姓名" v-model="form.name">
-                            学院：<select class="form-select tea-edit-college1" id="teaCollegeEditSelect" v-model="form.collegeName">
+                            工号：<input type="text" class="form-control" id="teaNumberEditInput" placeholder="请输入工号"
+                                v-model="form.username" readonly>
+                            姓名：<input type="text" class="form-control" id="teaNameEditInput" placeholder="请输入姓名"
+                                v-model="form.name">
+                            学院：<select class="form-select tea-edit-college1" id="teaCollegeEditSelect"
+                                v-model="form.collegeName">
                                 <option value="">请选择院系</option>
                                 <option v-for="college in colleges" :key="college.id" :value="college.name">
                                     {{ college.name }}
                                 </option>
                             </select>
-                            职位：<select class="form-select tea-edit-position1" id="teaPositionEditSelect" v-model="form.positionName">
+                            职位：<select class="form-select tea-edit-position1" id="teaPositionEditSelect"
+                                v-model="form.positionName">
                                 <option value="">请选择职位</option>
                                 <option v-for="pos in positionList" :key="pos.id" :value="pos.name">
                                     {{ pos.name }}
@@ -480,14 +627,15 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-primary" id="tea-edit-btn" @click="editTeacher">完成</button>
+                            <button type="button" class="btn btn-primary" id="tea-edit-btn"
+                                @click="editTeacher">完成</button>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- 添加教师模态框模态框 -->
             <div class="modal fade" id="addTeacherModal" tabindex="-1" aria-labelledby="teacherModalLabel"
-                aria-hidden="true"  @keydown.enter="addTeacher">
+                aria-hidden="true" @keydown.enter="addTeacher">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -495,12 +643,13 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            姓名：<input type="text" class="form-control" id="teaNameInput" v-model="form.name" placeholder="请输入姓名">
+                            姓名：<input type="text" class="form-control" id="teaNameInput" v-model="form.name"
+                                placeholder="请输入姓名">
                             学院：<select class="form-select" id="teaCollegeSelect" v-model="form.collegeName">
                                 <option value="">请选择院系</option>
                                 <option v-for="college in colleges" :key="college.id" :value="college.name">
                                     {{ college.name }}
-                                    
+
                                 </option>
                             </select>
                             职位：<select class="form-select" id="teaPositionSelect" v-model="form.position">
@@ -518,7 +667,8 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-primary" id="tea-add-btn" @click="addTeacher">完成</button>
+                            <button type="button" class="btn btn-primary" id="tea-add-btn"
+                                @click="addTeacher">完成</button>
                         </div>
                     </div>
                 </div>
@@ -547,7 +697,8 @@
                             <td>{{ teacher.gender }}</td>
                             <td>
                                 <button type="button" class="btn btn-primary" @click="editTeacher(teacher)">修改</button>
-                                <button type="button" class="btn btn-danger" @click="deleteTeacher(teacher)">删除</button>
+                                <button type="button" class="btn btn-danger"
+                                    @click="deleteTeacher(teacher.username)">删除</button>
                             </td>
                         </tr>
                     </tbody>
@@ -727,62 +878,10 @@
 <script src="../js/main_class.js"></script>
 <script src="../js/main_profile.js"></script>
 <script src="../js/main_comon.js"></script>
+<script src="../js/main_dashboard.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <script>
-    // 总学生数的饼状图
-    const ctx = document.getElementById('myPieChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'pie',  // 或 'doughnut' 环形图
-        data: {
-            labels: ['男生', '女生'],
-            datasets: [{
-                data: [750, 500],
-                backgroundColor: ['#3498db', '#e74c3c'],
-                borderColor: '#fff',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
-                tooltip: { enabled: true }
-            }
-        }
-    }
-    );
-    // 学院统计折线图
-    const ctxLine = document.getElementById('collageLineChart').getContext('2d');
-    new Chart(ctxLine, {
-        data: {
-            labels: ['信息科学与技术学院', '人文传播学院', '法学院', '会计与金融学院', '机自学院'],
-            datasets: [{
-                type: 'line',
-                label: '各学院学生人数',
-                data: [400, 300, 200, 350, 250],
-                fill: true,
-                borderColor: '#2ecc71',
-                tension: 0.4,
-                borderWidth: 3,
-                backgroundColor: 'rgba(46, 204, 113,0.2)'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'top' },
-                tooltip: { enabled: true }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
 
-
-        }
-    });
 
     // 左边栏点击业务
     const navItems = document.querySelectorAll('.nav-item');
@@ -831,6 +930,3 @@
 </script>
 
 </html>
-
-
-

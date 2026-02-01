@@ -2,9 +2,12 @@ package com.cjy.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjy.domain.Result;
 import com.cjy.domain.Teacher;
+import com.cjy.domain.dto.EditTeacherDTO;
 import com.cjy.domain.dto.TeacherDTO;
 import com.cjy.domain.vo.TeacherVO;
 
@@ -34,5 +37,12 @@ public interface ITeacherService extends IService<Teacher> {
      * @param teacherDTO
      * @return
      */
-    Result editTeacherInfo(TeacherDTO teacherDTO);
+    Result editTeacherInfo(EditTeacherDTO editTeacherDTO);
+
+    /**
+     * 批量添加教师信息
+     * @param file
+     * @return 添加成功的教师数量
+     */
+    Result batchAddTeaInfo(MultipartFile file);
 }

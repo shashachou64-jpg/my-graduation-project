@@ -144,7 +144,6 @@ html {
     margin-bottom: 20px;
     letter-spacing: 2px;
     display: flex;
-    justify-content: space-between;
 }
 
 /* 仪表盘列表 */
@@ -153,18 +152,18 @@ html {
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: space-between;
     width: 100%;
 }
 
 .dash-item li {
     font-size: 20px;
     color: #ffffff;
-    margin-right: 10px;
     letter-spacing: 2px;
-    width: 100%;
+    flex: 1;
     padding: 20px;
     text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .dash-item li:hover {
@@ -243,6 +242,194 @@ html {
 
 .dash-visible {
     display: block;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* 教师统计页面样式 */
+.teacher-stats-container {
+    padding: 0;
+    max-width: none;
+    height: auto;
+    min-height: calc(100vh - 120px);
+    width: 100%;
+}
+
+.stats-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stats-title i {
+    font-size: 32px;
+    color: #667eea;
+}
+
+/* 总人数卡片 */
+.total-card-wrapper {
+    margin-bottom: 24px;
+}
+
+.total-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    color: white;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.35);
+}
+
+.total-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.total-icon i {
+    font-size: 42px;
+    color: white;
+}
+
+.total-content {
+    flex: 1;
+}
+
+.total-label {
+    font-size: 16px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.total-value {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.total-divider {
+    width: 2px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.total-stats {
+    display: flex;
+    gap: 40px;
+}
+
+.total-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-num {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-txt {
+    font-size: 14px;
+    opacity: 0.85;
+    margin-top: 4px;
+}
+
+/* 图表区域 */
+.stats-charts {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 24px;
+    flex: 1;
+    min-height: 0;
+}
+
+.chart-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.chart-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fafbfc;
+}
+
+.chart-header i {
+    font-size: 22px;
+    color: #667eea;
+}
+
+.chart-body {
+    padding: 24px;
+    flex: 1;
+    min-height: 300px;
+}
+
+.pie-chart-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 280px;
+    min-height: 280px;
+}
+
+#teacherGenderChart,
+#teacherCollegeLineChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 响应式布局 */
+@media screen and (max-width: 1200px) {
+    .stats-charts {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .stats-charts {
+        grid-template-columns: 1fr;
+    }
+    
+    .total-card {
+        flex-wrap: wrap;
+        text-align: center;
+    }
+    
+    .total-divider {
+        display: none;
+    }
+    
+    .total-stats {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* 学生管理 */
@@ -270,13 +457,9 @@ html {
 /* 教师管理 */
 .teacher-edit-box {
     display: flex;
-    justify-content: flex-end;  /* 靠右对齐 */
+    justify-content: space-between;  /* 两端对齐 */
     padding-bottom: 20px;
     padding-left: 20px;
-}
-
-.teacher-import-btn {
-    margin-right: auto;  /* 导入按钮靠左 */
 }
 
 .teacher-add-btn {
@@ -817,4 +1000,402 @@ html {
         max-width: 100%;
         height: auto !important;
     }
+}
+
+/* ========================================
+   教师统计页面样式
+   ======================================== */
+
+/* 布局行 */
+.stats-row {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.stats-row.row-1 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.stats-row.row-2 {
+    grid-template-columns: 1fr;
+}
+
+/* 全宽图表 */
+.chart-full {
+    width: 100%;
+}
+
+/* 总人数卡片 */
+.total-card-wrapper {
+    min-width: 0;
+}
+
+.total-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    color: white;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.35);
+    height: 100%;
+}
+
+.total-icon {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.total-icon i {
+    font-size: 38px;
+    color: white;
+}
+
+.total-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.total-label {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 6px;
+}
+
+.total-value {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.total-divider {
+    width: 2px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.25);
+    flex-shrink: 0;
+}
+
+.total-stats {
+    display: flex;
+    gap: 30px;
+    flex-shrink: 0;
+}
+
+.total-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-txt {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-top: 4px;
+}
+
+/* 图表卡片 */
+.chart-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.chart-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fafbfc;
+    flex-shrink: 0;
+}
+
+.chart-header i {
+    font-size: 20px;
+    color: #667eea;
+}
+
+.chart-body {
+    padding: 20px;
+    flex: 1;
+    min-height: 280px;
+    height: 280px;
+}
+
+.pie-chart-body {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 250px;
+    min-height: 250px;
+}
+
+.pie-legend {
+    padding: 0 20px 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #666;
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+#teacherGenderChart,
+#teacherTitleChart,
+#teacherCollegeLineChart,
+#teacherAgeChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 工作量排行列表 */
+.chart-body-list {
+    padding: 15px 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.workload-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.workload-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.workload-item:hover {
+    background: #f0f2f5;
+}
+
+.rank-num {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.workload-item:nth-child(1) .rank-num { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.workload-item:nth-child(2) .rank-num { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); color: #2c3e50; }
+.workload-item:nth-child(3) .rank-num { background: linear-gradient(135deg, #74b9ff, #0984e3); }
+
+.teacher-name {
+    width: 60px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c3e50;
+    flex-shrink: 0;
+}
+
+.workload-bar {
+    flex: 1;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+}
+
+.workload-value {
+    width: 70px;
+    text-align: right;
+    font-size: 13px;
+    color: #666;
+    flex-shrink: 0;
+}
+
+/* 表格样式 */
+.chart-body-table {
+    padding: 15px 20px;
+    flex: 1;
+    overflow: auto;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.stats-table th {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid #e9ecef;
+    white-space: nowrap;
+}
+
+.stats-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e9ecef;
+    color: #555;
+}
+
+.stats-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.action-tag {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.action-tag.add {
+    background: rgba(17, 153, 142, 0.15);
+    color: #11998e;
+}
+
+.action-tag.edit {
+    background: rgba(102, 126, 234, 0.15);
+    color: #667eea;
+}
+
+.action-tag.delete {
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+}
+
+/* 响应式布局 */
+@media screen and (max-width: 1200px) {
+    .stats-row.row-1 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .stats-row.row-1 {
+        grid-template-columns: 1fr;
+    }
+    
+    .total-card {
+        flex-wrap: wrap;
+        text-align: center;
+    }
+    
+    .total-divider {
+        display: none;
+    }
+    
+    .total-stats {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .stats-title {
+        font-size: 22px;
+    }
+    
+    .total-card {
+        padding: 20px;
+    }
+    
+    .total-value {
+        font-size: 36px;
+    }
+}
+
+/* ========================================
+   学生统计页面样式（与教师统计一致）
+   ======================================== */
+.student-total-card {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    box-shadow: 0 10px 40px rgba(52, 152, 219, 0.35);
+}
+
+/* ========================================
+   课程统计页面样式
+   ======================================== */
+.course-stats-container {
+    padding: 0;
+    max-width: none;
+    width: 100%;
+    height: auto;
+    min-height: calc(100vh - 120px);
+}
+
+.course-stats-container .total-card-wrapper {
+    width: calc(100% - 40px); /* 减去父容器的左右padding各20px */
+    margin: 0 20px;
+    box-sizing: border-box;
+}
+
+.course-stats-container .chart-card {
+    padding: 0 20px; /* 确保图表卡片有相同的内边距 */
+    box-sizing: border-box;
+}
+
+.course-total-card {
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+    box-shadow: 0 10px 40px rgba(155, 89, 182, 0.35);
+    justify-content: center; /* 居中显示 */
+    text-align: center;
+    width: 100%;
+}
+
+.course-stats-container .stats-title i {
+    color: #9b59b6;
 }
