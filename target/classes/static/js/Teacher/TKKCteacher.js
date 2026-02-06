@@ -99,7 +99,10 @@ const homeWorkAPP = new Vue({
                 method: 'post',
                 data: dto
             })
-            
+            //关闭模态框
+            $('#publishHomeworkModal').modal('hide');
+            //刷新作业列表
+            await this.loadHomeworkList();
         }
             
     }
