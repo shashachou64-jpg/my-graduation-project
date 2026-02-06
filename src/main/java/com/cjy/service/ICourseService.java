@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjy.domain.Course;
-import com.cjy.domain.dto.CourseDTO;
-import com.cjy.domain.dto.CourseWithStudentsDTO;
+import com.cjy.dto.CourseDTO;
+import com.cjy.dto.CourseWithStudentsDTO;
+import com.cjy.vo.CourseInfoVO;
+import com.cjy.vo.CourseTotalVO;
 
 @Service
 public interface ICourseService extends IService<Course> {
@@ -22,4 +24,8 @@ public interface ICourseService extends IService<Course> {
     Course getCourseById(Integer courseId);
 
     boolean updatingCourseInfo(Course course);
+
+    CourseTotalVO getCourseTotalInfo();
+
+    List<CourseInfoVO> getCourseListByTeacherId(Long teacherId);
 }

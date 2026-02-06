@@ -3,11 +3,16 @@ package com.cjy.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cjy.common.Result;
 import com.cjy.domain.Course;
-import com.cjy.domain.Result;
-import com.cjy.domain.dto.CourseDTO;
-import com.cjy.domain.dto.CourseWithStudentsDTO;
+import com.cjy.dto.CourseDTO;
+import com.cjy.dto.CourseWithStudentsDTO;
 import com.cjy.service.ICourseService;
+import com.cjy.utils.JwtUtil;
+import com.cjy.vo.CourseInfoVO;
+import com.cjy.vo.CourseTotalVO;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -16,8 +21,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Slf4j
 @RestController
 @RequestMapping("/course")
 public class CourseController {
@@ -127,6 +134,11 @@ public class CourseController {
         return Result.success(course, "获取课程成功");
     }
 
+    /**
+     * 更新课程信息
+     * @param course
+     * @return
+     */
     @PostMapping("/updatingCourseInfo")
     public Result updatingCourseInfo(@RequestBody Course course) {
         if(course==null){
@@ -154,4 +166,47 @@ public class CourseController {
 
     }
     
+    /**
+     * 获取课程总数信息
+     * @return
+     */
+    @GetMapping("/total")
+    public Result total() {
+        CourseTotalVO courseTotalVO = iCourseService.getCourseTotalInfo();
+        return Result.success(courseTotalVO);
+    }
+
+
+    /**
+     * 获取教师所教课程列表
+     * @param token
+     * @return
+     */
+    @GetMapping("/listByTeacherId/{token}")
+    public Result list(@PathVariable String token) {
+        log.info("Token: {}", token);
+        log.info("================================================");
+        
+        // 2. JWT解析出username (用户名格式如 "20230001")
+        String username = JwtUtil.getUsername(token);
+        if (username == null || username.length() < 4) {
+            return Result.error("登录过期，请重新登录");
+        }
+        log.info("Username: {}", username);
+        log.info("================================================");
+        // 3. 取后面4位作为教师id
+        String idStr = username.substring(username.length() - 4);
+        
+        // 4. 去除前导0
+        idStr = idStr.replaceFirst("^0+", "");
+        if (idStr.isEmpty()) {
+            idStr = "0";
+        }
+        
+        // 5. 转换为Long得到教师id
+        Long teacherId = Long.parseLong(idStr);
+        log.info("{}", teacherId);
+        List<CourseInfoVO> voList = iCourseService.getCourseListByTeacherId(teacherId);
+        return Result.success(voList);
+    }
 }

@@ -1,11 +1,647 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>教师端 - 学生分组管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/TKKCteacher.css">
+
 </head>
+
 <body>
-    
+
+
+    <!-- 左侧边栏 -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <h4>分组管理系统</h4>
+            <small>教师端</small>
+        </div>
+        <div class="sidebar-menu">
+            <div class="nav-link active" onclick="showPage('dashboard')">
+                <i class="bi bi-grid-1x2"></i>
+                <span class="nav-text">仪表盘</span>
+            </div>
+            <div class="nav-link" onclick="showPage('courses'); sidebar.getCourseList()">
+                <i class="bi bi-book"></i>
+                <span class="nav-text">课程管理</span>
+            </div>
+            <div class="nav-link" onclick="showPage('groups')">
+                <i class="bi bi-people"></i>
+                <span class="nav-text">分组管理</span>
+            </div>
+            <div class="nav-link" onclick="showPage('students')">
+                <i class="bi bi-person-badge"></i>
+                <span class="nav-text">学生管理</span>
+            </div>
+            <div class="nav-link" onclick="showPage('homework')">
+                <i class="bi bi-clipboard-check"></i>
+                <span class="nav-text">作业管理</span>
+            </div>
+            <div class="nav-link" onclick="showPage('announcements')">
+                <i class="bi bi-megaphone"></i>
+                <span class="nav-text">公告通知</span>
+            </div>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="user-avatar">{{ name.charAt(0) }}</div>
+                <div>
+                    <div class="user-name">{{ name }}</div>
+                    <div class="user-role">{{ positionName }}</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <!-- 顶部导航栏 -->
+        <header class="top-navbar">
+            <div class="d-flex align-items-center">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom mb-0">
+                        <li class="breadcrumb-item"><a href="#" class="text-decoration-none">首页</a></li>
+                        <li class="breadcrumb-item active" id="breadcrumb-title">仪表盘</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="#" class="nav-icon-btn">
+                    <i class="bi bi-gear"></i>
+                </a>
+                <a href="index.html" class="nav-icon-btn" title="退出登录">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
+            </div>
+        </header>
+
+        <!-- 页面内容 -->
+        <div class="page-content">
+            <!-- 仪表盘页面 -->
+            <div id="page-dashboard" class="page-section">
+                <!-- 统计卡片 -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="bi bi-book"></i></div>
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">我的课程</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="bi bi-people"></i></div>
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">学生总数</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="bi bi-clipboard-check"></i></div>
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">待批改作业</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 课程列表卡片 -->
+                <div class="content-card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">我的课程</h5>
+                        <button class="btn btn-primary-custom text-white" onclick="showPage('courses')">
+                            <i class="bi bi-plus-lg me-1"></i>查看全部
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table custom-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>课程名称</th>
+                                        <th>学院</th>
+                                        <th>学生人数</th>
+                                        <th>分组数</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>数据结构</strong></td>
+                                        <td>信息科学与技术学院</td>
+                                        <td>45</td>
+                                        <td>8</td>
+                                        <td><span class="status-badge active">进行中</span></td>
+                                        <td>
+                                            <button
+                                                class="btn btn-sm btn-outline-primary btn-outline-custom">管理</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>数据库原理</strong></td>
+                                        <td>信息科学与技术学院</td>
+                                        <td>38</td>
+                                        <td>6</td>
+                                        <td><span class="status-badge active">进行中</span></td>
+                                        <td>
+                                            <button
+                                                class="btn btn-sm btn-outline-primary btn-outline-custom">管理</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>软件工程</strong></td>
+                                        <td>信息科学与技术学院</td>
+                                        <td>52</td>
+                                        <td>0</td>
+                                        <td><span class="status-badge pending">待分组</span></td>
+                                        <td>
+                                            <button
+                                                class="btn btn-sm btn-outline-primary btn-outline-custom">管理</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 课程管理页面 -->
+            <div id="page-courses" class="page-section d-none">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h5 class="card-title">课程管理</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <select class="form-select">
+                                    <option selected>全部学院</option>
+                                    <option>信息科学与技术学院</option>
+                                    <option>经济管理学院</option>
+                                    <option>文法学院</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" placeholder="搜索课程名称...">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100">重置</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table custom-table text-center">
+
+                                <tr>
+                                    <th class="text-center" style="width: 60px;">序号</th>
+                                    <th class="text-center" style="min-width: 150px;">课程名称</th>
+                                    <th class="text-center" style="min-width: 120px;">学院</th>
+                                    <th class="text-center" style="width: 80px;">学分</th>
+                                    <th class="text-center" style="width: 90px;">学生人数</th>
+                                    <th class="text-center" style="width: 80px;">分组数</th>
+                                    <th class="text-center" style="width: 100px;">操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(course,index) in courseList" :key="course.id">
+                                        <td class="align-middle text-center">{{index+1}}</td>
+                                        <td class="align-middle text-center"><strong>{{course.courseName}}</strong></td>
+                                        <td class="align-middle text-center">{{course.collegeName}}</td>
+                                        <td class="align-middle text-center">{{course.credit}}</td>
+                                        <td class="align-middle text-center">{{course.currentNum}}</td>
+                                        <td class="align-middle text-center">{{course.groupCount}}</td>
+                                        <td class="align-middle text-center">
+                                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分组管理页面 -->
+            <div id="page-groups" class="page-section d-none">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h5 class="card-title">分组管理 - 数据结构</h5>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary-custom text-white">
+                                <i class="bi bi-plus-lg me-1"></i>添加小组
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info d-flex align-items-center mb-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <div>
+                                当前课程共有 <strong>45</strong>
+                                名学生，<strong>8</strong> 个小组。
+                            </div>
+                        </div>
+                        <div class="row g-4">
+                            <div class="col-md-4 col-lg-3">
+                                <div class="border rounded-3 p-3 text-center bg-primary bg-opacity-10">
+                                    <div class="display-6 fw-bold text-primary">8</div>
+                                    <div class="text-muted">小组总数</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-lg-3">
+                                <div class="border rounded-3 p-3 text-center bg-success bg-opacity-10">
+                                    <div class="display-6 fw-bold text-success">5-6</div>
+                                    <div class="text-muted">每组人数</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-lg-3">
+                                <div class="border rounded-3 p-3 text-center bg-warning bg-opacity-10">
+                                    <div class="display-6 fw-bold text-warning">40</div>
+                                    <div class="text-muted">已分组学生</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-lg-3">
+                                <div class="border rounded-3 p-3 text-center bg-danger bg-opacity-10">
+                                    <div class="display-6 fw-bold text-danger">5</div>
+                                    <div class="text-muted">未分组学生</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>小组名称</th>
+                                        <th>成员人数</th>
+                                        <th>创建时间</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>第一小组</strong></td>
+                                        <td>6人</td>
+                                        <td>2024-01-10</td>
+                                        <td><span class="status-badge active">进行中</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                                            <button class="btn btn-sm btn-outline-warning">编辑</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>第二小组</strong></td>
+                                        <td>6人</td>
+                                        <td>2024-01-10</td>
+                                        <td><span class="status-badge active">进行中</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                                            <button class="btn btn-sm btn-outline-warning">编辑</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>第三小组</strong></td>
+                                        <td>5人</td>
+                                        <td>2024-01-11</td>
+                                        <td><span class="status-badge active">进行中</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                                            <button class="btn btn-sm btn-outline-warning">编辑</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>第四小组</strong></td>
+                                        <td>6人</td>
+                                        <td>2024-01-11</td>
+                                        <td><span class="status-badge full">已满</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                                            <button class="btn btn-sm btn-outline-warning">编辑</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 学生管理页面 -->
+            <div id="page-students" class="page-section d-none">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h5 class="card-title">学生管理</h5>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-success">
+                                <i class="bi bi-upload me-1"></i>批量导入
+                            </button>
+                            <button class="btn btn-primary-custom text-white">
+                                <i class="bi bi-person-plus me-1"></i>添加学生
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <select class="form-select">
+                                    <option selected>按学院筛选</option>
+                                    <option>信息科学与技术学院</option>
+                                    <option>经济管理学院</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select">
+                                    <option selected>按分组状态</option>
+                                    <option>已分组</option>
+                                    <option>未分组</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" placeholder="搜索学生姓名/学号...">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100">重置</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>学号</th>
+                                        <th>姓名</th>
+                                        <th>学院</th>
+                                        <th>专业</th>
+                                        <th>所属小组</th>
+                                        <th>加入时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>20220001</td>
+                                        <td>张三</td>
+                                        <td>信息科学与技术学院</td>
+                                        <td>计算机科学与技术</td>
+                                        <td><span class="badge bg-primary">第一小组</span></td>
+                                        <td>2024-01-15</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                                            <button class="btn btn-sm btn-outline-warning">调整分组</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>20220002</td>
+                                        <td>李四</td>
+                                        <td>信息科学与技术学院</td>
+                                        <td>计算机科学与技术</td>
+                                        <td><span class="badge bg-primary">第二小组</span></td>
+                                        <td>2024-01-15</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                                            <button class="btn btn-sm btn-outline-warning">调整分组</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>20220003</td>
+                                        <td>王五</td>
+                                        <td>信息科学与技术学院</td>
+                                        <td>软件工程</td>
+                                        <td><span class="badge bg-secondary">未分组</span></td>
+                                        <td>-</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                                            <button class="btn btn-sm btn-success">分配分组</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 作业管理页面 -->
+            <div id="page-homework" class="page-section d-none">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h5 class="card-title">作业管理</h5>
+                        <button class="btn btn-primary-custom text-white" data-bs-toggle="modal"
+                            data-bs-target="#publishHomeworkModal" @click="addHomework">
+                            <i class="bi bi-plus-lg me-1"></i>发布作业
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>作业名称</th>
+                                        <th>所属课程</th>
+                                        <th>发布学生</th>
+                                        <th>提交情况</th>
+                                        <th>截止时间</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>二叉树遍历算法实现</strong></td>
+                                        <td>数据结构</td>
+                                        <td>40/45</td>
+                                        <td>
+                                            <div class="progress" style="height: 8px; width: 100px;">
+                                                <div class="progress-bar bg-success" style="width: 89%"></div>
+                                            </div>
+                                        </td>
+                                        <td>2024-01-20 23:59</td>
+                                        <td><span class="status-badge active">进行中</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                                            <button class="btn btn-sm btn-success">批改</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>SQL语句练习</strong></td>
+                                        <td>数据库原理</td>
+                                        <td>35/38</td>
+                                        <td>
+                                            <div class="progress" style="height: 8px; width: 100px;">
+                                                <div class="progress-bar bg-success" style="width: 92%"></div>
+                                            </div>
+                                        </td>
+                                        <td>2024-01-18 23:59</td>
+                                        <td><span class="status-badge active">进行中</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                                            <button class="btn btn-sm btn-success">批改</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 发布作业模态框 -->
+                <div class="modal fade" id="publishHomeworkModal" tabindex="-1"
+                    aria-labelledby="publishHomeworkModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="publishHomeworkModalLabel">发布作业</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label class="form-label">作业标题 <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="homeworkTitle" placeholder="请输入作业标题"
+                                            v-model="publishHomeworkForm.title">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">所属课程 <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="homeworkCourse"
+                                            v-model="publishHomeworkForm.courseId" @change="loadGroupList">
+                                            <option value="">请选择课程</option>
+                                            <option v-for="course in courseList" :value="course.id">{{ course.courseName }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">指定小组 <span class="text-muted">(可选)</span></label>
+                                        <select class="form-select" id="homeworkGroup" v-model="publishHomeworkForm.groupId">
+                                            <option value="">全部小组</option>
+                                            <option v-for="group in groupList" :value="group.id">{{ group.groupName }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">作业描述</label>
+                                        <textarea class="form-control" id="homeworkDescription" rows="4"
+                                            placeholder="请输入作业描述" v-model="publishHomeworkForm.remark"></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">开始时间</label>
+                                            <input type="datetime-local" class="form-control" id="homeworkStartTime" v-model="publishHomeworkForm.startTime">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">截止时间 <span class="text-danger">*</span></label>
+                                            <input type="datetime-local" class="form-control" id="homeworkDeadline" v-model="publishHomeworkForm.deadline">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">满分分数</label>
+                                        <input type="number" class="form-control" id="homeworkTotalScore" min="0"
+                                            max="200" placeholder="默认100分" v-model="publishHomeworkForm.totalScore">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                <button type="button" class="btn btn-primary-custom text-white" @click="publishHomework">发布</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- 公告通知页面 -->
+            <div id="page-announcements" class="page-section d-none">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h5 class="card-title">公告通知</h5>
+                        <button class="btn btn-primary-custom text-white">
+                            <i class="bi bi-plus-lg me-1"></i>发布公告
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-1">关于数据结构期中考试安排的通知</h6>
+                                        <small class="text-muted">发布时间：2024-01-15 10:30 | 课程：数据结构</small>
+                                    </div>
+                                    <span class="badge bg-primary">置顶</span>
+                                </div>
+                                <p class="mb-2 text-muted">
+                                    各位同学好，数据结构课程将于下周三进行期中考试，考试时间为上午9:00-11:00，地点为A201教室。请同学们提前做好准备，准时参加考试。</p>
+                                <div class="d-flex gap-2 mt-3">
+                                    <button class="btn btn-sm btn-outline-primary">编辑</button>
+                                    <button class="btn btn-sm btn-outline-danger">删除</button>
+                                </div>
+                            </div>
+                            <div class="list-group-item p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-1">软件工程课程分组名单公示</h6>
+                                        <small class="text-muted">发布时间：2024-01-14 15:20 | 课程：软件工程</small>
+                                    </div>
+                                </div>
+                                <p class="mb-2 text-muted">各位同学，软件工程课程分组名单已经确定，请查看附件中的分组名单。如有问题请及时反馈。</p>
+                                <div class="d-flex gap-2 mt-3">
+                                    <button class="btn btn-sm btn-outline-primary">编辑</button>
+                                    <button class="btn btn-sm btn-outline-danger">删除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="../js/axios.min.js"></script>
+    <script src="../js/request.js"></script>
+
+    <script src="../js/Teacher/TKKCteacher.js"></script>
+    <script>
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.add('d-none');
+            });
+            document.getElementById('page-' + pageId).classList.remove('d-none');
+
+            document.querySelectorAll('.sidebar-menu .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('.nav-link').classList.add('active');
+
+            const titles = {
+                'dashboard': '仪表盘',
+                'courses': '课程管理',
+                'groups': '分组管理',
+                'students': '学生管理',
+                'homework': '作业管理',
+                'announcements': '公告通知',
+                'materials': '资料管理'
+            };
+            document.getElementById('breadcrumb-title').textContent = titles[pageId];
+        }
+    </script>
 </body>
+
 </html>

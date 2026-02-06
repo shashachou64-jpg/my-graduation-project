@@ -3,10 +3,10 @@ package com.cjy.service;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cjy.domain.Result;
+import com.cjy.common.Result;
 import com.cjy.domain.User;
-import com.cjy.domain.dto.PasswordDTO;
-import com.cjy.domain.dto.PersonalDTO;
+import com.cjy.dto.PasswordDTO;
+import com.cjy.dto.PersonalDTO;
 
 import jakarta.validation.constraints.Pattern;
 

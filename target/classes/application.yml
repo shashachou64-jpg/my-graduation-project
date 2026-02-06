@@ -4,14 +4,55 @@ spring:
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
+  # Redis配置
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 
+      database: 1
+      timeout: 10000
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 0
+  # RabbitMQ配置
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin123
+    virtual-host: /
+    # 连接超时
+    connection-timeout: 60000
+    # 心跳
+    requested-heartbeat: 30
+    # 开启消息确认
+    publisher-confirm-type: correlated
+    # 开启消息返回
+    publisher-returns: true
+    listener:
+      simple:
+        # 开启手动确认
+        acknowledge-mode: manual
+        prefetch: 10
+        # 开启重试
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+          max-interval: 10000
+          multiplier: 2
 # 热部署配置
   devtools:
     restart:
       enabled: true
       additional-paths: src/main/java,src/main/resources
       exclude: static/**,public/**
-      poll-interval: 10s      # 每10秒检查一次变化
-      quiet-period: 3s        # 等待3秒后再重启
+      poll-interval: 15s      # 每10秒检查一次变化
+      quiet-period: 2s        # 等待3秒后再重启
 # MyBatis-Plus配置
 mybatis-plus:
   configuration:
@@ -19,9 +60,3 @@ mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
 server:
   port: 8090
-
-
-
-
-
-

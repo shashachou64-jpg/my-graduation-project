@@ -4,7 +4,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.cjy.domain.Result;
+import com.cjy.common.Result;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

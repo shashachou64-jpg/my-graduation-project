@@ -1,11 +1,12 @@
 package com.cjy.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cjy.domain.Result;
+import com.cjy.common.Result;
 import com.cjy.domain.Student;
-import com.cjy.domain.dto.BatchStudentDTO;
-import com.cjy.domain.dto.StudentDTO;
-import com.cjy.domain.vo.StudentVO;
+import com.cjy.dto.BatchStudentDTO;
+import com.cjy.dto.StudentDTO;
+import com.cjy.vo.StudentTotalVO;
+import com.cjy.vo.StudentVO;
 
 import java.util.List;
 
@@ -51,4 +52,17 @@ public interface IStudentService extends IService<Student>{
      * @return
      */
     Result deleteStudent(String number);
+
+    /**
+     * 获取学生总数信息
+     * @return
+     */
+    StudentTotalVO getStudentTotalInfo();
+
+    /**
+     * 根据课程id获取学生列表
+     * @param courseId
+     * @return
+     */
+    List<StudentVO> getStudentListByCourseId(Long courseId);
 }

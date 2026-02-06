@@ -1,7 +1,7 @@
 package com.cjy.controller;
 
+import com.cjy.common.Result;
 import com.cjy.domain.College;
-import com.cjy.domain.Result;
 import com.cjy.service.ICollegeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

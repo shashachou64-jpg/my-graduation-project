@@ -1,10 +1,10 @@
 package com.cjy.controller;
 
 import com.auth0.jwt.JWT;
-import com.cjy.domain.Result;
+import com.cjy.common.Result;
 import com.cjy.domain.User;
-import com.cjy.domain.dto.PasswordDTO;
-import com.cjy.domain.dto.PersonalDTO;
+import com.cjy.dto.PasswordDTO;
+import com.cjy.dto.PersonalDTO;
 import com.cjy.service.IUserService;
 import com.cjy.utils.JwtUtil;
 

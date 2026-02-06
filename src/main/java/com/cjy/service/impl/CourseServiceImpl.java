@@ -3,17 +3,24 @@ package com.cjy.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjy.common.RedisCourseConstants;
 import com.cjy.domain.College;
 import com.cjy.domain.Course;
 import com.cjy.domain.CourseWithStudents;
+import com.cjy.domain.Group;
 import com.cjy.domain.Student;
-import com.cjy.domain.dto.CourseDTO;
-import com.cjy.domain.dto.CourseWithStudentsDTO;
+import com.cjy.domain.TeacherWithCourse;
+import com.cjy.dto.CourseDTO;
+import com.cjy.dto.CourseWithStudentsDTO;
 import com.cjy.mapper.CollegeMapper;
 import com.cjy.mapper.CourseMapper;
 import com.cjy.mapper.CourseWithStudentsMapper;
+import com.cjy.mapper.GroupMapper;
 import com.cjy.mapper.StudentMapper;
+import com.cjy.mapper.TeacherWithCourseMapper;
 import com.cjy.service.ICourseService;
+import com.cjy.vo.CourseInfoVO;
+import com.cjy.vo.CourseTotalVO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,6 +43,18 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
     @Autowired
     private StudentMapper studentMapper;
+
+    @Autowired
+    private CourseMapper courseMapper;
+
+    @Autowired
+    private TeacherWithCourseMapper teacherWithCourseMapper;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private GroupMapper groupMapper;
 
     /**
      * 定义方法将Course对象转换为CourseDTO对象
@@ -251,5 +271,118 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         } catch (Exception e) {
             throw new RuntimeException("更新课程信息失败: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public CourseTotalVO getCourseTotalInfo() {
+        //查询总课程数
+        Long courseCount=courseMapper.selectCount(null);
+        //查询所有学院课程数
+        List<Map<String,Object>> collegeCourseList=courseMapper.getCollegeCourseList();
+        //转换为VO
+        List<CourseTotalVO.CollegeCourseVO> collegeCourseVOList = new ArrayList<>();
+        for(Map<String,Object> map : collegeCourseList){
+            CourseTotalVO.CollegeCourseVO collegeCourseVO = new CourseTotalVO.CollegeCourseVO();
+            collegeCourseVO.setCollegeName(map.get("collegeName").toString());
+            collegeCourseVO.setCourseCount(Long.parseLong(map.get("courseCount").toString()));
+            collegeCourseVOList.add(collegeCourseVO);
+        }
+        return new CourseTotalVO(courseCount, collegeCourseVOList);
+    }
+
+    @Override
+    public List<CourseInfoVO> getCourseListByTeacherId(Long teacherId) {
+        // 获得教师所有的课程id
+        List<Long> courseIdList = teacherWithCourseMapper.selectList(
+            new LambdaQueryWrapper<TeacherWithCourse>()
+            .eq(TeacherWithCourse::getTeacherId, teacherId)
+        ).stream().map(TeacherWithCourse::getCourseId).collect(Collectors.toList());
+
+        if (courseIdList.isEmpty()||courseIdList==null) {
+            return new ArrayList<>();
+        }
+
+        //批量获取课程信息
+        List<CourseInfoVO> courseInfoVOList = new ArrayList<>();
+        for (Long courseId : courseIdList) {
+            CourseInfoVO vo = getSingleCourseInfo(courseId);
+            if (vo!=null) {
+                courseInfoVOList.add(vo);
+            }
+        }   
+        return courseInfoVOList;
+    }
+
+    /**
+     * 获取单个课程信息（带缓存）
+     * @param courseId 课程ID
+     * @return 课程信息
+     */
+    private CourseInfoVO getSingleCourseInfo(Long courseId) {
+       String infoKey = RedisCourseConstants.COURSE_INFO + courseId;
+       String countKey = RedisCourseConstants.COURSE_GROUP_COUNT + courseId;
+
+       // 1. 查缓存 - 用 infoKey
+       Map<Object, Object> entriesMap = stringRedisTemplate.opsForHash().entries(infoKey);
+       Map<String, String> infoMap = new HashMap<>();
+       for (Map.Entry<Object, Object> entry : entriesMap.entrySet()) {
+           infoMap.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+       }
+       String groupCountStr = stringRedisTemplate.opsForValue().get(countKey);
+
+       // 2. 缓存命中
+       if (infoMap != null && !infoMap.isEmpty()) {
+           return buildVOFromCache(courseId, infoMap, groupCountStr);
+       }
+
+       // 3. 缓存未命中，查DB
+       Course course = courseMapper.selectById(courseId);
+       if (course == null) {
+           return null;
+       }
+
+       // 查询分组数
+       Long groupCount = groupMapper.selectCount(
+           new LambdaQueryWrapper<Group>()
+               .eq(Group::getCourseId, courseId)
+       );
+
+       // 4. 回填缓存
+       Map<String, String> hashData = new HashMap<>();
+       hashData.put("courseName", course.getCourseName());
+       hashData.put("collegeName", collegeMapper.selectById(course.getCollegeId()).getName());
+       hashData.put("credit", String.valueOf(course.getCredit()));
+       hashData.put("maxNum", String.valueOf(course.getMaxNum()));
+       hashData.put("currentNum", String.valueOf(course.getCurrentNum()));
+
+       stringRedisTemplate.opsForHash().putAll(infoKey, hashData);
+       stringRedisTemplate.expire(infoKey, RedisCourseConstants.COURSE_INFO_TTL, java.util.concurrent.TimeUnit.SECONDS);
+       stringRedisTemplate.opsForValue().set(countKey, String.valueOf(groupCount));
+
+       // 5. 构建返回对象
+       CourseInfoVO vo = new CourseInfoVO();
+       vo.setId(courseId);
+       vo.setCourseName(course.getCourseName());
+       vo.setCollegeName(hashData.get("collegeName"));
+       vo.setCredit(course.getCredit());
+       vo.setMaxNum(course.getMaxNum());
+       vo.setCurrentNum(course.getCurrentNum());
+       vo.setGroupCount(groupCount);
+       return vo;
+    }
+
+    /**
+     * 从缓存构建VO
+     */
+    private CourseInfoVO buildVOFromCache(Long courseId, Map<String, String> infoMap, String groupCountStr) {
+        CourseInfoVO vo = new CourseInfoVO();
+        vo.setId(courseId);
+        vo.setCourseName(infoMap.get("courseName"));
+        vo.setCollegeName(infoMap.get("collegeName"));
+        vo.setCredit(Integer.parseInt(infoMap.get("credit")));
+        vo.setMaxNum(Integer.parseInt(infoMap.get("maxNum")));
+        vo.setCurrentNum(Integer.parseInt(infoMap.get("currentNum")));
+        vo.setGroupCount(groupCountStr != null ? Long.parseLong(groupCountStr) : 0L);
+        return vo;
     }
 }

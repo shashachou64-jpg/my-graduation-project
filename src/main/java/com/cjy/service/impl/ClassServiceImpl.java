@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjy.common.Result;
 import com.cjy.domain.Class;
 import com.cjy.domain.College;
 import com.cjy.domain.Major;
-import com.cjy.domain.Result;
 import com.cjy.mapper.ClassMapper;
 import com.cjy.mapper.CollegeMapper;
 import com.cjy.mapper.MajorMapper;

@@ -1,11 +1,13 @@
 package com.cjy.controller;
 
-import com.cjy.domain.Result;
+import com.cjy.common.Result;
 import com.cjy.domain.Student;
-import com.cjy.domain.dto.BatchStudentDTO;
-import com.cjy.domain.dto.StudentDTO;
-import com.cjy.domain.vo.StudentVO;
+import com.cjy.dto.BatchStudentDTO;
+import com.cjy.dto.StudentDTO;
 import com.cjy.service.IStudentService;
+import com.cjy.vo.StudentTotalVO;
+import com.cjy.vo.StudentVO;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -93,5 +95,25 @@ public class StudentController {
         Result result = iStudentService.deleteStudent(number);
         return result;
     }
-    
+
+    /**
+     * 获取学生总数信息
+     * @return
+     */
+    @GetMapping("/total")
+    public Result total() {
+        StudentTotalVO studentTotalVO = iStudentService.getStudentTotalInfo();
+        return Result.success(studentTotalVO);
+    }
+
+    /**
+     * 根据课程id获取学生列表
+     * @param courseId
+     * @return
+     */
+    @GetMapping("/listByCourseId/{courseId}")
+    public Result getStudentListByCourseId(@PathVariable Long courseId) {
+        List<StudentVO> list = iStudentService.getStudentListByCourseId(courseId);
+        return Result.success(list);
+    }
 }

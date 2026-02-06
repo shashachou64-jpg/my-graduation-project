@@ -3,33 +3,42 @@ package com.cjy.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjy.mapper.CollegeMapper;
+import com.cjy.mapper.CourseWithStudentsMapper;
 import com.cjy.mapper.MajorMapper;
 import com.cjy.mapper.PersonalMapper;
 import com.cjy.mapper.StudentMapper;
 import com.cjy.mapper.UserMapper;
+import com.cjy.common.RedisConstants;
+import com.cjy.common.Result;
 import com.cjy.domain.Class;
 import com.cjy.domain.College;
+import com.cjy.domain.CourseWithStudents;
 import com.cjy.domain.Major;
 import com.cjy.domain.Personal;
-import com.cjy.domain.Result;
 import com.cjy.domain.Student;
 import com.cjy.domain.User;
 import com.cjy.domain.UserWithIdentity;
-import com.cjy.domain.dto.BatchStudentDTO;
-import com.cjy.domain.dto.StudentDTO;
-import com.cjy.domain.vo.StudentVO;
+import com.cjy.dto.BatchStudentDTO;
+import com.cjy.dto.StudentDTO;
 import com.cjy.mapper.ClassMapper;
 import com.cjy.mapper.UserWithIdentityMapper;
 import com.cjy.service.IPersonalService;
 import com.cjy.service.IStudentService;
 import com.cjy.service.IUserWithIdentityService;
+import com.cjy.utils.CacheClient;
+import com.cjy.vo.StudentTotalVO;
+import com.cjy.vo.StudentVO;
+
+import cn.hutool.core.lang.TypeReference;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -51,16 +60,18 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         private UserMapper userMapper;
 
         @Autowired
-        private PersonalMapper personalMapper;
+        private CourseWithStudentsMapper courseWithStudentsMapper;
 
         @Autowired
-        private IPersonalService iPersonalService;
+        private PersonalMapper personalMapper;
 
         @Autowired
         private UserWithIdentityMapper userWithIdentityMapper;
 
         @Autowired
-        private IUserWithIdentityService iUserWithIdentityService;
+        private CacheClient cacheClient;
+
+        
 
         // =====================================================
         // 公用方法
@@ -507,5 +518,80 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
                 } catch (Exception e) {
                         throw new RuntimeException(e);
                 }
+        }
+
+        @Override
+        public StudentTotalVO getStudentTotalInfo() {
+                // 1.查询所有学生人数
+                Long totalStudent = studentMapper.selectCount(null);
+                // 2.查询男女学生人数
+                Long manStudent = studentMapper.selectCount(new LambdaQueryWrapper<Student>().eq(Student::getGender, "男"));
+                Long womanStudent = studentMapper.selectCount(new LambdaQueryWrapper<Student>().eq(Student::getGender, "女"));
+                
+                List<Map<String,Object>> collegeStudentList = studentMapper.getCollegeStudentList();
+
+                List<String> collegeNames = collegeStudentList.stream()
+                                .map(map -> (String) map.get("collegeName"))
+                                .toList();
+                List<Long> collegeStudentCounts = collegeStudentList.stream()
+                                .map(map -> (Long) map.get("studentCount"))
+                                .toList();
+                
+                List<StudentTotalVO.CollegeStudentVO> collegeStudentVOList = new ArrayList<>();
+                for (int i = 0; i < collegeNames.size(); i++) {
+                        StudentTotalVO.CollegeStudentVO collegeStudentVO = new StudentTotalVO.CollegeStudentVO();
+                        collegeStudentVO.setCollegeName(collegeNames.get(i));
+                        collegeStudentVO.setCollegeStudent(collegeStudentCounts.get(i));
+                        collegeStudentVOList.add(collegeStudentVO);
+                }       
+
+                return new StudentTotalVO(totalStudent, manStudent, womanStudent, collegeStudentVOList);
+        }
+
+        /**
+         * 根据课程id获取学生列表
+         * @param courseId
+         * @return
+         * 新课程可能会添加多个小组
+         * 第一次查询从数据库中查
+         * 第二次查询从缓存中查
+         * 如果缓存中没有，则从数据库中查
+         * 并缓存到缓存中
+         * 如果缓存中没有，则从数据库中查
+         */
+        @Override
+        public List<StudentVO> getStudentListByCourseId(Long courseId) {
+                /**
+                 * 1.从缓存中查
+                 * 2.如果缓存中没有，则从数据库中查
+                 * 3.并缓存到缓存中
+                 * 4.如果缓存中没有，则从数据库中查
+                 */
+                //1.从缓存中查
+                List<StudentVO> studentVOList = cacheClient.queryWithLogicExpire(
+                        RedisConstants.STUDENT_COURSE_GROUP,
+                        courseId,
+                        new TypeReference<List<StudentVO>>() {
+                        },
+                        this::getStudentListByCourseIdFromDb,
+                        RedisConstants.STUDENT_DATA_TTL,
+                        TimeUnit.MINUTES);
+                return studentVOList;
+        }
+
+        private List<StudentVO> getStudentListByCourseIdFromDb(Long courseId) {
+                
+                // 1.根据课程id查询学生学号列表
+                List<String> studentNumberList = courseWithStudentsMapper.selectList(
+                        new LambdaQueryWrapper<CourseWithStudents>()
+                        .eq(CourseWithStudents::getCourseId, courseId))
+                        .stream()
+                        .map(CourseWithStudents::getStudentNumber)
+                        .toList();
+                //2.将学生学号列表转换为学生列表
+                List<Student> studentList = studentMapper.selectList(new LambdaQueryWrapper<Student>().in(Student::getNumber, studentNumberList));
+                //3.将学生列表转换为学生VO列表
+                return convertToVOList(studentList);
+
         }
 }

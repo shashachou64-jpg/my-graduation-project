@@ -2,10 +2,10 @@ package com.cjy.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjy.common.Result;
 import com.cjy.domain.Personal;
-import com.cjy.domain.Result;
 import com.cjy.domain.User;
-import com.cjy.domain.dto.PersonalDTO;
+import com.cjy.dto.PersonalDTO;
 import com.cjy.mapper.PersonalMapper;
 import com.cjy.mapper.UserMapper;
 import com.cjy.service.IPersonalService;

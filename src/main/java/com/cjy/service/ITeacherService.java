@@ -5,11 +5,12 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cjy.domain.Result;
+import com.cjy.common.Result;
 import com.cjy.domain.Teacher;
-import com.cjy.domain.dto.EditTeacherDTO;
-import com.cjy.domain.dto.TeacherDTO;
-import com.cjy.domain.vo.TeacherVO;
+import com.cjy.dto.EditTeacherDTO;
+import com.cjy.dto.TeacherDTO;
+import com.cjy.vo.TeacherTotalVO;
+import com.cjy.vo.TeacherVO;
 
 public interface ITeacherService extends IService<Teacher> {
     /**
@@ -45,4 +46,12 @@ public interface ITeacherService extends IService<Teacher> {
      * @return 添加成功的教师数量
      */
     Result batchAddTeaInfo(MultipartFile file);
+
+    /**
+     * 获取老师总数信息
+     * @return
+     */
+    TeacherTotalVO getTeacherTotalInfo();
+
+    Result getTeacherInfo(Long id);
 }

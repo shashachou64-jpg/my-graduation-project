@@ -3,9 +3,9 @@ package com.cjy.service;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjy.common.Result;
 import com.cjy.domain.Personal;
-import com.cjy.domain.Result;
-import com.cjy.domain.dto.PersonalDTO;
+import com.cjy.dto.PersonalDTO;
 
 
 @Service

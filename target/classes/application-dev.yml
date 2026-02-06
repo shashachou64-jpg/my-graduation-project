@@ -22,6 +22,7 @@ logging:
   level:
     com.cjy: debug
     org.springframework: info
+    org.springframework.web.servlet.resource: warn  # 降低静态资源警告级别
     org.mybatis: debug
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

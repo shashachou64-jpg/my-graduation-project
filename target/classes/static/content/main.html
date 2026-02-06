@@ -69,7 +69,7 @@
                 </ul>
             </div>
             <!-- 第一页总学生 -->
-            <div id="dash-student" class="dash-sub-page dash-visible">
+            <div id="studentStatsApp" class="dash-sub-page dash-visible">
                 <div class="student-stats-container">
 
                     <!-- 第一行：总人数卡片 + 性别比例 -->
@@ -82,16 +82,16 @@
                                 </div>
                                 <div class="total-content">
                                     <div class="total-label">总学生人数</div>
-                                    <div class="total-value" id="totalStudentsCount">3,256</div>
+                                    <div class="total-value" id="totalStudentsCount">{{totalStudent}}</div>
                                 </div>
                                 <div class="total-divider"></div>
                                 <div class="total-stats">
                                     <div class="total-stat">
-                                        <span class="stat-num" style="color: #3498db;">1,850</span>
+                                        <span class="stat-num" style="color: #3498db;">{{manStudent}}</span>
                                         <span class="stat-txt">男生</span>
                                     </div>
                                     <div class="total-stat">
-                                        <span class="stat-num" style="color: #e74c3c;">1,406</span>
+                                        <span class="stat-num" style="color: #e74c3c;">{{womanStudent}}</span>
                                         <span class="stat-txt">女生</span>
                                     </div>
                                 </div>
@@ -105,16 +105,16 @@
                                 <span>性别比例</span>
                             </div>
                             <div class="chart-body pie-chart-body">
-                                <canvas id="studentGenderChart"></canvas>
+                                <canvas id="studentGenderChart" ref="studentGenderChart"></canvas>
                             </div>
                             <div class="pie-legend">
                                 <div class="legend-item">
                                     <span class="legend-dot" style="background: #3498db;"></span>
-                                    <span>男生 1,850人</span>
+                                    <span>男生 {{manStudent}}人</span>
                                 </div>
                                 <div class="legend-item">
                                     <span class="legend-dot" style="background: #e74c3c;"></span>
-                                    <span>女生 1,406人</span>
+                                    <span>女生 {{womanStudent}}人</span>
                                 </div>
                             </div>
                         </div>
@@ -128,15 +128,15 @@
                                 <span>各学院学生分布</span>
                             </div>
                             <div class="chart-body">
-                                <canvas id="studentCollegeLineChart"></canvas>
+                                <canvas id="studentCollegeLineChart" ref="studentCollegeLineChart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="dash-sub-page" id="dash-teacher">
-                <!-- 教师统计页面 -->
+            <!-- 总教师统计页面 -->
+            <div class="dash-sub-page" id="teacherStatsApp">
                 <div class="page dash-item-page teacher-stats-page dash-visible">
                     <div class="teacher-stats-container">
                         <!-- 第一行：总人数卡片 + 性别比例 -->
@@ -149,16 +149,16 @@
                                     </div>
                                     <div class="total-content">
                                         <div class="total-label">总教师人数</div>
-                                        <div class="total-value" id="totalTeachersCount">1,256</div>
+                                        <div class="total-value" id="totalTeachersCount">{{totalTeacher}}</div>
                                     </div>
                                     <div class="total-divider"></div>
                                     <div class="total-stats">
                                         <div class="total-stat">
-                                            <span class="stat-num" style="color: #667eea;">580</span>
+                                            <span class="stat-num" style="color: #667eea;">{{manTeacher}}</span>
                                             <span class="stat-txt">男教师</span>
                                         </div>
                                         <div class="total-stat">
-                                            <span class="stat-num" style="color: #e74c3c;">676</span>
+                                            <span class="stat-num" style="color: #e74c3c;">{{womanTeacher}}</span>
                                             <span class="stat-txt">女教师</span>
                                         </div>
                                     </div>
@@ -172,16 +172,16 @@
                                     <span>性别比例</span>
                                 </div>
                                 <div class="chart-body pie-chart-body">
-                                    <canvas id="teacherGenderChart"></canvas>
+                                    <canvas id="teacherGenderChart" ref="teacherGenderChart"></canvas>
                                 </div>
                                 <div class="pie-legend">
                                     <div class="legend-item">
                                         <span class="legend-dot" style="background: #667eea;"></span>
-                                        <span>男教师 580人</span>
+                                        <span>男教师 {{manTeacher}}人</span>
                                     </div>
                                     <div class="legend-item">
                                         <span class="legend-dot" style="background: #e74c3c;"></span>
-                                        <span>女教师 676人</span>
+                                        <span>女教师 {{womanTeacher}}人</span>
                                     </div>
                                 </div>
                             </div>
@@ -195,7 +195,7 @@
                                     <span>各学院教师分布</span>
                                 </div>
                                 <div class="chart-body">
-                                    <canvas id="teacherCollegeLineChart"></canvas>
+                                    <canvas id="teacherCollegeLineChart" ref="teacherCollegeLineChart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -204,7 +204,7 @@
             </div>
 
             <!-- 总课程统计页面 -->
-            <div class="dash-sub-page" id="dash-course">
+            <div class="dash-sub-page" id="courseStatsApp">
                 <div class="page dash-item-page course-stats-page dash-visible">
                     <div class="course-stats-container">
 
@@ -217,7 +217,7 @@
                                     </div>
                                     <div class="total-content">
                                         <div class="total-label">总课程数</div>
-                                        <div class="total-value" id="totalCoursesCount">856</div>
+                                        <div class="total-value" id="totalCoursesCount">{{totalCourse}}</div>
                                     </div>
                                 </div>
                             </div>
@@ -231,7 +231,7 @@
                                     <span>各学院课程分布</span>
                                 </div>
                                 <div class="chart-body">
-                                    <canvas id="courseCollegeLineChart"></canvas>
+                                    <canvas id="courseCollegeLineChart" ref="courseCollegeLineChart"></canvas>
                                 </div>
                             </div>
                         </div>

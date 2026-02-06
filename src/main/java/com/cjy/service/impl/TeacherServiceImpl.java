@@ -4,18 +4,25 @@ import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjy.common.RedisConstants;
+import com.cjy.common.Result;
 import com.cjy.domain.College;
 import com.cjy.domain.Personal;
 import com.cjy.domain.Position;
-import com.cjy.domain.Result;
 import com.cjy.domain.Teacher;
 import com.cjy.domain.User;
 import com.cjy.domain.UserWithIdentity;
-import com.cjy.domain.dto.BatchTeacherDTO;
-import com.cjy.domain.dto.EditTeacherDTO;
-import com.cjy.domain.dto.TeacherDTO;
-import com.cjy.domain.vo.TeacherVO;
+import com.cjy.dto.BatchTeacherDTO;
+import com.cjy.dto.EditTeacherDTO;
+import com.cjy.dto.TeacherDTO;
+import com.cjy.utils.CacheClient;
 import com.cjy.utils.TrimConverter;
+import com.cjy.vo.TeacherInfoDTO;
+import com.cjy.vo.TeacherTotalVO;
+import com.cjy.vo.TeacherVO;
+
+import com.alibaba.fastjson2.JSON;
+
 import com.cjy.mapper.CollegeMapper;
 import com.cjy.mapper.PersonalMapper;
 import com.cjy.mapper.PositionMapper;
@@ -24,13 +31,17 @@ import com.cjy.mapper.UserMapper;
 import com.cjy.mapper.UserWithIdentityMapper;
 import com.cjy.service.ITeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +63,12 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
 
     @Autowired
     private UserWithIdentityMapper userWithIdentityMapper;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private CacheClient cacheClient;
 
     @Override
     public Result addTeacher(TeacherDTO teacherDTO) {
@@ -425,4 +442,76 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
             throw new RuntimeException("导入失败: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public TeacherTotalVO getTeacherTotalInfo() {
+        // 1. 查询所有教师人数
+        Long totalTeacher = teacherMapper.selectCount(null);
+        System.out.println("总教师人数：" + totalTeacher);
+        //查询男女教师人数
+        Long manTeacher=teacherMapper.selectCount(
+            new LambdaQueryWrapper<Teacher>().eq(Teacher::getGender, "男")
+        );
+        Long womanTeacher=teacherMapper.selectCount(
+            new LambdaQueryWrapper<Teacher>().eq(Teacher::getGender, "女")
+        );
+
+        /**
+         * 查询所有学院名称
+         * 和学院对应名称的对应的教师人数
+         */
+        List<Map<String,Object>> collegeTeacherList = teacherMapper.getCollegeTeacherList();
+
+        //转换格式
+        List<String> collegeNames=collegeTeacherList.stream()
+        .map(map->(String)map.get("collegeName"))
+        .collect(Collectors.toList());
+
+        List<Long> collegeTeacherCounts=collegeTeacherList.stream()
+        .map(map->(Long)map.get("teacherCount"))
+        .collect(Collectors.toList());
+
+        //转换为VO
+        List<TeacherTotalVO.CollegeTeacherVO> collegeTeacherVOList=new ArrayList<>();
+        for (int i = 0; i < collegeNames.size(); i++) {
+            TeacherTotalVO.CollegeTeacherVO collegeTeacherVO=new TeacherTotalVO.CollegeTeacherVO();
+            collegeTeacherVO.setCollegeName(collegeNames.get(i));
+            collegeTeacherVO.setCollegeTeacher(collegeTeacherCounts.get(i));
+            collegeTeacherVOList.add(collegeTeacherVO);
+        }
+
+
+        return new TeacherTotalVO(totalTeacher,manTeacher,womanTeacher,collegeTeacherVOList);
+    }
+
+    /**
+     * 获取教师个人信息
+     */
+    @Override
+    public Result getTeacherInfo(Long id) {
+        /**
+         * 根据id查询教师信息
+         */
+        Teacher teacher = teacherMapper.selectOne(new LambdaQueryWrapper<Teacher>().eq(Teacher::getId, id));
+        if (teacher == null) {
+            return Result.error("该教师不存在");
+        }
+        //查询到教师信息，封装成vo
+        TeacherInfoDTO teacherInfoDTO = teacherToVO(teacher);
+
+        //存入缓存
+        cacheClient.setWithLogicExpireAndRandom(RedisConstants.TEACHER_INFO + id, teacherInfoDTO, RedisConstants.TEACHER_INFO_TTL, TimeUnit.MINUTES);
+
+        return Result.success(teacherInfoDTO);
+    }
+
+    private TeacherInfoDTO teacherToVO(Teacher teacher) {
+        TeacherInfoDTO teacherInfoDTO = new TeacherInfoDTO();
+        teacherInfoDTO.setId(teacher.getId());
+        teacherInfoDTO.setName(teacher.getName());
+        teacherInfoDTO.setCollegeName(collegeMapper.selectOne(new LambdaQueryWrapper<College>().eq(College::getId, teacher.getCollegeId())).getName());
+        teacherInfoDTO.setPositionName(positionMapper.selectOne(new LambdaQueryWrapper<Position>().eq(Position::getId, teacher.getPositionId())).getName());
+        teacherInfoDTO.setGender(teacher.getGender());
+        return teacherInfoDTO;
+    }   
 }

@@ -2,7 +2,8 @@ package com.cjy.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjy.domain.Student;
-import com.cjy.domain.vo.StudentVO;
+import com.cjy.vo.StudentVO;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.ResultMap;
@@ -10,6 +11,7 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface StudentMapper extends BaseMapper<Student> {
@@ -30,5 +32,16 @@ public interface StudentMapper extends BaseMapper<Student> {
             @Result(property = "gender", column = "gender")
     })
     List<StudentVO> selectStudentVOList();
+
+    /**
+     * 获取学院学生人数列表
+     * 
+     * @return
+     */
+    @Select("SELECT c.name AS collegeName, COUNT(s.number) AS studentCount " +
+                "FROM college c LEFT JOIN student s ON s.college_id = c.id " +
+                "GROUP BY c.id, c.name")
+    List<Map<String, Object>> getCollegeStudentList();
+
 
 }
