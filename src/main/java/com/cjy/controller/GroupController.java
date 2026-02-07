@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cjy.common.Result;
 import com.cjy.dto.AddGroupDTO;
 import com.cjy.dto.GroupDTO;
@@ -34,7 +35,10 @@ public class GroupController {
      */
     @GetMapping("/listByCourseId")
     public Result listByCourseId(@RequestParam Long courseId) {
-        List<Group> groupList = iGroupService.getGroupsByCourseId(courseId);
+        List<Group> groupList = iGroupService.list(
+            new LambdaQueryWrapper<Group>()
+            .eq(Group::getCourseId, courseId)
+        );
         return Result.success(groupList);
     }
 

@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 body {
-    background-color: #fff;
+    background-color: #fafbfc;
     min-height: 100vh;
 }
 .sidebar {
@@ -97,7 +97,7 @@ body {
     min-height: 100vh;
 }
 .top-navbar {
-    background-color: #fff;
+    background-color: #fafbfc;
     padding: 1rem 2rem;
     display: flex;
     align-items: center;
@@ -145,8 +145,8 @@ body {
     width: 38px;
     height: 38px;
     border-radius: 8px;
-    border: 1px solid #dee2e6;
-    background-color: #fff;
+    border: 1px solid #e2e5e8;
+    background-color: #fafbfc;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -172,7 +172,7 @@ body {
     padding: 2rem;
 }
 .stat-card {
-    background-color: #fff;
+    background-color: #fafbfc;
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
@@ -210,14 +210,14 @@ body {
     margin-bottom: 0;
 }
 .content-card {
-    background-color: #fff;
+    background-color: #fafbfc;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     border: none;
     overflow: hidden;
 }
 .content-card .card-header {
-    background-color: #fff;
+    background-color: #fafbfc;
     border-bottom: 1px solid #f1f3f5;
     padding: 1.25rem 1.5rem;
     display: flex;
@@ -237,8 +237,8 @@ body {
     margin-bottom: 0;
 }
 .custom-table thead th {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #e9ecef;
+    background-color: #f0f2f5;
+    border-bottom: 2px solid #e2e5e8;
     color: #495057;
     font-weight: 600;
     font-size: 0.85rem;
@@ -254,7 +254,7 @@ body {
     border-bottom: 1px solid #f1f3f5;
 }
 .custom-table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: #f0f2f5;
 }
 .btn-primary-custom {
     background-color: #0d6efd;
@@ -310,7 +310,7 @@ body {
     color: #fff;
 }
 .info-item {
-    background-color: #f8f9fa;
+    background-color: #f0f2f5;
     border-radius: 8px;
     padding: 1rem;
 }
@@ -355,8 +355,8 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 8px;
-    border: 1px solid #dee2e6;
-    background-color: #fff;
+    border: 1px solid #e2e5e8;
+    background-color: #fafbfc;
     align-items: center;
     justify-content: center;
     cursor: pointer;
@@ -392,7 +392,7 @@ body {
     box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
 }
 .input-group-text {
-    background-color: #f8f9fa;
+    background-color: #f0f2f5;
     border-right: none;
 }
 .input-group-text i {
@@ -408,3 +408,5 @@ body {
     border-color: #0d6efd;
     box-shadow: none;
 }
+
+

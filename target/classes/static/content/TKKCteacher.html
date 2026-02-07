@@ -13,7 +13,14 @@
 </head>
 
 <body>
-
+    <div class="alert alert-danger" role="alert" id="alert-DangerB"
+        style="position: fixed; left: 50%; transform: translateX(-50%); top: 30px; transition: all 0.3s ease; display: none; opacity: 0; z-index: 9999;">
+        A simple danger alert—check it out!
+    </div>
+    <div class="alert alert-success" role="alert" id="alert-SuccessMessage" style="position: fixed; left: 50%; transform: translateX(-50%); top: 70px;
+            transition: all 0.3s ease; display: none; opacity: 0; z-index: 9999;">
+        操作成功！
+    </div>
 
     <!-- 左侧边栏 -->
     <nav class="sidebar" id="sidebar">
@@ -38,7 +45,7 @@
                 <i class="bi bi-person-badge"></i>
                 <span class="nav-text">学生管理</span>
             </div>
-            <div class="nav-link" onclick="showPage('homework')">
+            <div class="nav-link" onclick="showPage('homework'); sidebar.getHomeworkList()">
                 <i class="bi bi-clipboard-check"></i>
                 <span class="nav-text">作业管理</span>
             </div>
@@ -445,48 +452,30 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table custom-table">
+                            <table class="table custom-table text-center">
                                 <thead>
                                     <tr>
-                                        <th>作业名称</th>
-                                        <th>所属课程</th>
-                                        <th>发布学生</th>
-                                        <th>提交情况</th>
-                                        <th>截止时间</th>
-                                        <th>状态</th>
-                                        <th>操作</th>
+                                        <th class="text-center">作业名称</th>
+                                        <th class="text-center">所属课程</th>
+                                        <th class="text-center">发布学生</th>
+                                        <th class="text-center">提交情况</th>
+                                        <th class="text-center">截止时间</th>
+                                        <th class="text-center">操作</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><strong>二叉树遍历算法实现</strong></td>
-                                        <td>数据结构</td>
-                                        <td>40/45</td>
-                                        <td>
-                                            <div class="progress" style="height: 8px; width: 100px;">
-                                                <div class="progress-bar bg-success" style="width: 89%"></div>
+                                    <tr v-for="homework in homeworkList" :key="homework.id">
+                                        <td class="align-middle text-center"><strong>{{homework.title}}</strong></td>
+                                        <td class="align-middle text-center">{{homework.courseName}}</td>
+                                        <td class="align-middle text-center">{{homework.publishStudentCount}}/{{homework.courseClassStudentCount}}</td>
+                                        <td class="align-middle text-center">
+                                            <div class="progress justify-content-center" style="height: 8px; width: 100px;">
+                                                <div class="progress-bar bg-success" :style="{ width: (homework.submitRate * 100) + '%' }"></div>
                                             </div>
                                         </td>
-                                        <td>2024-01-20 23:59</td>
-                                        <td><span class="status-badge active">进行中</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary">查看</button>
-                                            <button class="btn btn-sm btn-success">批改</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>SQL语句练习</strong></td>
-                                        <td>数据库原理</td>
-                                        <td>35/38</td>
-                                        <td>
-                                            <div class="progress" style="height: 8px; width: 100px;">
-                                                <div class="progress-bar bg-success" style="width: 92%"></div>
-                                            </div>
-                                        </td>
-                                        <td>2024-01-18 23:59</td>
-                                        <td><span class="status-badge active">进行中</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                                        <td class="align-middle text-center">{{homework.deadlineStr}}</td>
+                                        <td class="align-middle text-center">
+                                            <button class="btn btn-sm btn-outline-primary" @click="viewSubmissionDetail(homework)">查看</button>
                                             <button class="btn btn-sm btn-success">批改</button>
                                         </td>
                                     </tr>

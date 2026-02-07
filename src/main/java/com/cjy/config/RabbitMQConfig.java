@@ -8,6 +8,7 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import com.cjy.common.RabbitMQConstants;
 
@@ -112,9 +113,9 @@ public class RabbitMQConfig {
      * 用于发送消息
      */
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    public RabbitTemplate rabbitTemplate(@NonNull ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-    rabbitTemplate.setMessageConverter(jsonMessageConverter());
+        rabbitTemplate.setMessageConverter(jsonMessageConverter());
     
     // 【关键配置】开启消息确认机制
     rabbitTemplate.setMandatory(true);

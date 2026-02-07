@@ -12,4 +12,12 @@ public interface IHomeworkService extends IService<Homework> {
 
     Result publishHomework(PublishHomeworkDTO dto);
 
+    Result listHomeworkByTeacherId(Long teacherId);
+
+    Result listHomeworkByStudentId(String id);
+
+    Result detailHomeworkAll(Long homeworkId, Long teacherId);
+
+    Result detailHomeworkPage(Long homeworkId, Long teacherId, Integer pagenum, Integer pagesize);
+
 }

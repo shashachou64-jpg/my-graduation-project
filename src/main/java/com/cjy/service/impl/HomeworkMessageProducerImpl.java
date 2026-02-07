@@ -26,24 +26,9 @@ public class HomeworkMessageProducerImpl implements IHomeworkMessageProducer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    @Autowired
-    private StudentWithGroupMapper studentWithGroupMapper;
 
-    @Autowired
-    private CourseWithStudentsMapper courseWithStudentsMapper;
-
-    /**
-     * 发送教师发布作业消息
-     */
-    @Override
-    public void sendPublishMessage(Homework homework) {
-        /**
-         * 根据小组id查询学生列表
-         */
-        List<String> studentNumbers = getStudentNumbersByGroupId(homework.getGroupId(),homework.getCourseId());
-        /**
-         * 构建作业消息DTO
-         */
+    public void sendPublishMessage(Homework homework, List<String> studentNumbers) {
+        // 构建作业消息DTO
         HomeworkMessageDTO dto = HomeworkMessageDTO.builder()
                 .homeworkId(homework.getId())
                 .title(homework.getTitle())
@@ -57,9 +42,7 @@ public class HomeworkMessageProducerImpl implements IHomeworkMessageProducer {
                 .studentNumbers(studentNumbers)
                 .build();
 
-        /**
-         * 发送作业消息（带 CorrelationData 用于确认回调）
-         */
+        // ========== 2. 发送到RabbitMQ ==========
         CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
         rabbitTemplate.convertAndSend(
                 RabbitMQConstants.HOMEWORK_EXCHANGE,
@@ -67,65 +50,15 @@ public class HomeworkMessageProducerImpl implements IHomeworkMessageProducer {
                 dto,
                 correlationData);
 
-        log.info("【MessageProducer】发送作业消息，作业ID：{}，标题：{}，消息ID：{}", 
-                homework.getId(), homework.getTitle(), correlationData.getId());
+        log.info("【MessageProducer】发送作业发布消息，作业ID：{}，标题：{}，学生数量：{}，消息ID：{}",
+                homework.getId(), homework.getTitle(), studentNumbers.size(), correlationData.getId());
     }
 
-    /**
-     * 批量发送学生通知
-     */
     @Override
-    public void batchSendStudentNotification(Homework homework) {
-        /**
-         * 构建作业消息DTO
-         */
-        List<String> studentNumbers = getStudentNumbersByGroupId(homework.getGroupId(),homework.getCourseId());
-        HomeworkMessageDTO dto = HomeworkMessageDTO.builder()
-                .homeworkId(homework.getId())
-                .title(homework.getTitle())
-                .description(homework.getDescription())
-                .courseId(homework.getCourseId())
-                .teacherId(homework.getTeacherId())
-                .groupId(homework.getGroupId())
-                .startTime(homework.getStartTime())
-                .deadline(homework.getDeadline())
-                .createTime(homework.getCreateTime())
-                .studentNumbers(studentNumbers)
-                .build();
-
-        /**
-         * 发送作业消息（带 CorrelationData 用于确认回调）
-         */
-        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
-        rabbitTemplate.convertAndSend(
-            RabbitMQConstants.HOMEWORK_EXCHANGE,
-            RabbitMQConstants.HOMEWORK_RECEIVE_ROUTING_KEY,
-            dto,
-            correlationData);
-
-        log.info("【MessageProducer】批量发送学生通知，作业ID：{}，学生数量：{}，消息ID：{}", 
-                homework.getId(), studentNumbers.size(), correlationData.getId());
-
+    public void batchSendStudentNotification(HomeworkMessageDTO dto) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'batchSendStudentNotification'");
     }
-
-
-    private List<String> getStudentNumbersByGroupId(Long groupId, Long courseId) {
-        if (groupId == null) {
-            //返回课程所有学生
-            return courseWithStudentsMapper.selectList(
-                new LambdaQueryWrapper<CourseWithStudents>()
-                .eq(CourseWithStudents::getCourseId, courseId))
-                .stream()
-                .map(CourseWithStudents::getStudentNumber)
-                .toList();
-        }
-        return studentWithGroupMapper.selectList(
-            new LambdaQueryWrapper<StudentWithGroup>()
-            .eq(StudentWithGroup::getGroupId, groupId))
-            .stream()
-            .map(StudentWithGroup::getStudentNumber)
-            .toList();
-       
-    }
+    
 }
 

@@ -71,15 +71,11 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
   @Autowired
   private StringRedisTemplate stringRedisTemplate;
 
-  /**
-   * 根据课程ID获取小组列表
-   */
   @Override
   public List<Group> getGroupsByCourseId(Long courseId) {
-    LambdaQueryWrapper<Group> queryWrapper = new LambdaQueryWrapper<>();
-    queryWrapper.eq(Group::getCourseId, courseId);
-    queryWrapper.orderByDesc(Group::getCreateTime);
-    return this.list(queryWrapper);
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getGroupsByCourseId'");
   }
+
   
 }
